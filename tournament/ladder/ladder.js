@@ -1,5 +1,4 @@
-const express = require('express')
-const router = express.Router()
+const router = require('express').Router()
 
 router.route('/ladder')
 .get((req, res) => { // get tournament ladder
@@ -9,4 +8,4 @@ router.route('/ladder')
 
 })
 
-exports = router
+exports.router = router

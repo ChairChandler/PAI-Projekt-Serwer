@@ -1,10 +1,9 @@
-const express = require('express')
-const router = express.Router()
+const router = require('express').Router()
 const subRoutes = {
-    login: require('./login/login'),
-    register: require('./register/register')
+    login: require('./login/login').router,
+    register: require('./register/register').router
 }
 
 router.use('/user', subRoutes.login, subRoutes.register) 
 
-exports = router
+exports.router = router

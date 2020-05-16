@@ -1,5 +1,4 @@
-const express = require('express')
-const router = express.Router()
+const router = require('express').Router()
 
 router.route('/contestants')
 .post((req, res) => { // add contestant to the tournament
@@ -9,4 +8,4 @@ router.route('/contestants')
     
 })
 
-exports = router
+exports.router = router

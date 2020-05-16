@@ -1,12 +1,11 @@
-const express = import('express')
-const router = express.Router()
+const router = require('express').Router()
 
 router.route('/login')
 .put((req, res) => { // sign in
 
 })
 .get((req, res) => { // forgot password
-
+    
 })
 
-exports = router
+exports.router = router

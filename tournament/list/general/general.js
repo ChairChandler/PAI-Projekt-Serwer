@@ -1,9 +1,8 @@
-const express = require('express')
-const router = express.Router()
+const router = require('express').Router()
 
 router.route('/general')
 .get((req, res) => { // get tournaments list
 
 })
 
-exports = router
+exports.router = router
