@@ -1,11 +1,12 @@
 const express = require('express')
+const endpoints = require('./controllers/controller').router
+const config = require('./config/server.json')
 const app = express()
-const subRoutes = {
-    tournament: require('./tournament/tournament').router,
-    user: require('./user/user').router,
-}
 
-app.use('/', subRoutes.tournament, subRoutes.user) 
-app.listen(2000, () => {
+app.use(express.urlencoded({extended: true}))
+app.use(express.json())
+app.use(endpoints)
+
+app.listen(config.port, () => {
     console.log('Starting server done')
 })
