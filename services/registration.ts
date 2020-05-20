@@ -1,9 +1,10 @@
 const mailer = require('nodemailer')
-const UserModel = require.main.require('./models/users').User
+const User  = require.main.require('./models/users').User
 
 async function signUp(data) {
     try {
-        await UserModel.create(data)
+        await User.sync()
+        await User.create(data)
         return true
     } catch(err) {
         return false

@@ -1,17 +1,16 @@
 const info = require.main.require('./config/database').sequelize
 import SQL, { Model } from 'sequelize'
-import User from './users'
+import User from './user'
 import Logo from './logo'
 
 class Tournament extends Model {
-    public logo_group_id: Number
-
+    public owner_id: Number
     public tournament_name: String
-    public description: String
+    public description: String | null
     public datetime: Date
-    public localization_lat: Number
-    public localization_lng: Number
-    public participants_limit: Number
+    public localization_lat: Number //latitude
+    public localization_lng: Number //longitude
+    public participants_limit: Number | null
     public joining_deadline: Date
     public current_contestants_amount: Number
 
@@ -40,13 +39,14 @@ class Tournament extends Model {
 }
 
 Tournament.init({
-    logo_group_id: {
-        type: SQL.INTEGER,
-        unique: true
+    owner_id: {
+        type: SQL.INTEGER.UNSIGNED,
+        allowNull: false
     },
     tournament_name: {
         type: SQL.STRING, 
         allowNull: false,
+        primaryKey: true,
         validate: {len: [8, 24]}
     },
     description: {
@@ -79,20 +79,15 @@ Tournament.init({
     },
     current_contestants_amount: {
         type: SQL.INTEGER.UNSIGNED,
+        allowNull: false,
         defaultValue: 0
     }
 }, {
     sequelize: new SQL.Sequelize(info),
-    tableName: 'tournament'
+    tableName: 'tournaments'
 })
 
-Tournament.hasOne(User)
-Tournament.hasMany(Logo, {
-    sourceKey: 'logo_group_id',
-    foreignKey: 'group_id',
-    as: 'logos'
-})
-
-Tournament.sync()
+Tournament.belongsTo(User, {foreignKey: {field: 'owner_id', allowNull: false}, onDelete: 'CASCADE'}) // tournament has one owner     
+Tournament.hasMany(Logo) // tournament can have many logos
 
 export default Tournament

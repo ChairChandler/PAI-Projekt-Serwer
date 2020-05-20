@@ -1,5 +1,7 @@
 const info = require.main.require('./config/database').sequelize
 import SQL, { Model } from 'sequelize'
+import Tournament from './tournament'
+import Contestant from './contestant'
 
 class User extends Model {
     public name: String
@@ -25,6 +27,7 @@ User.init({
     },
     email: {
         type: SQL.STRING, 
+        allowNull: false,
         primaryKey: true, 
         validate: {isEmail: true}
     },
@@ -41,9 +44,10 @@ User.init({
 }, 
 {
     sequelize: new SQL.Sequelize(info),
-    tableName: 'user'
+    tableName: 'users'
 })
 
-User.sync()
+User.hasMany(Tournament) //one user can be a organizer of many tournaments
+User.hasMany(Contestant) //one user can be a participant in many tournaments
 
 export default User
