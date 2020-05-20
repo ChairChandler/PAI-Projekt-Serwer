@@ -1,6 +1,6 @@
-const express = require('express')
+import express from 'express'
 const endpoints = require('./controllers/controller').router
-const config = require('./config/server.json')
+import config from './config/server.json'
 const app = express()
 
 app.use(express.urlencoded({extended: true}))

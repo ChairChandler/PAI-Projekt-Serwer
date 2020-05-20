@@ -1,4 +1,5 @@
-const router = require('express').Router()
+import express = require('express')
+const router = express.Router()
 const subRoutes = {
     contestants: require('../contestants/contestants').router,
     info: require('../info/info').router,

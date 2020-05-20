@@ -1,4 +1,5 @@
-const router = require('express').Router()
+import express = require('express')
+const router = express.Router()
 
 router.route('/login')
 .put((req, res) => { // sign in

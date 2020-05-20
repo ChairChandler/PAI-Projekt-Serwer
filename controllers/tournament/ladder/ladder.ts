@@ -1,4 +1,5 @@
-const router = require('express').Router()
+import express = require('express')
+const router = express.Router()
 
 router.route('/ladder')
 .get((req, res) => { // get tournament ladder

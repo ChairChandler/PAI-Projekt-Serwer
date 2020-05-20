@@ -1,4 +1,5 @@
-const router = require('express').Router()
+import express = require('express')
+const router = express.Router()
 const HttpCode = require('http-status-codes')
 
 const register = require.main.require('./services/registration').service
