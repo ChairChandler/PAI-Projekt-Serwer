@@ -4,17 +4,24 @@ import Tournament from './tournament'
 import Contestant from './contestant'
 
 class User extends Model {
+    public id: Number
     public name: String
     public lastname: String
     public email: String
     public password: String
     public logged: Boolean
+    public registered: Boolean
 
     public readonly createdAt: Date
     public readonly updatedAt: Date
 }
 
 User.init({
+    id: {
+        type: SQL.INTEGER,
+        primaryKey: true,
+        autoIncrement: true
+    },
     name: {
         type: SQL.STRING, 
         allowNull: false, 
@@ -39,6 +46,11 @@ User.init({
     logged: {
         type: SQL.BOOLEAN, 
         allowNull: false, 
+        defaultValue: false
+    },
+    registered: {
+        type: SQL.BOOLEAN,
+        allowNull: false,
         defaultValue: false
     }
 }, 
