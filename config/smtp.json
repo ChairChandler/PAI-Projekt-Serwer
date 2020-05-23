@@ -1,6 +1,6 @@
 {
     "connection": {
-        "host": "smtp.testmail",
+        "host": "localhost",
         "port": 3000,   
         "secure": false,
         "auth": {

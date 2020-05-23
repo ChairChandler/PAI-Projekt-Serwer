@@ -1,10 +1,8 @@
-import express = require('express')
+import express from 'express'
+import loginRoute from './login/login'
+import registerRoute from './register/register'
+
 const router = express.Router()
-const subRoutes = {
-    login: require('./login/login').router,
-    register: require('./register/register').router
-}
+router.use('/user', loginRoute, registerRoute) 
 
-router.use('/user', subRoutes.login, subRoutes.register) 
-
-exports.router = router
+export default router

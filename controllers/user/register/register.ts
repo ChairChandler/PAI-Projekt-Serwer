@@ -1,20 +1,20 @@
-import express from 'express'
-const verifyRoute = require('./verify/verify')
-const router = express.Router()
-const HttpCode = require('http-status-codes')
+import express, { Request, Response } from 'express'
+import verifyRoute from './verify/verify'
+import HttpCode from 'http-status-codes'
+import { signUp } from'services/registration'
 
-const register = require.main.require('./services/registration').signUp
+const router = express.Router()
 
 // sign up
 router.route('/register')
-.post(async (req, res) => {
-    if(await register(req.body)) {
-        res.sendStatus(HttpCode.CREATED)
+.post(async (req: Request, res: Response) => {
+    if(await signUp(req.body)) {
+        res.status(HttpCode.CREATED).send()
     } else {
-        res.sendStatus(HttpCode.INTERNAL_SERVER_ERROR)
+        res.status(HttpCode.INTERNAL_SERVER_ERROR).send()
     }
 })
 
 router.use('/register', verifyRoute)
 
-exports.router = router
+export default router

@@ -1,12 +1,10 @@
-import express = require('express')
+import express from 'express'
+import contestantsRoute from './contestants/contestants'
+import infoRoute from './info/info'
+import ladderRoute from './ladder/ladder'
+import listRoute from './list/list'
+
 const router = express.Router()
-const subRoutes = {
-    contestants: require('../contestants/contestants').router,
-    info: require('../info/info').router,
-    ladder: require('../ladder/ladder').router,
-    list: require('../list/list').router
-}
+router.use('/tournament', contestantsRoute, infoRoute, ladderRoute, listRoute) 
 
-router.use('/tournament', subRoutes.contestants, subRoutes.info, subRoutes.ladder, subRoutes.list) 
-
-exports.router = router
+export default router

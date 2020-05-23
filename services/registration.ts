@@ -1,24 +1,25 @@
-import { createTransport } from 'nodemailer'
-const smtp_config = require.main.require('./config/smtp.json')
-const server_config = require.main.require('./config/server')
-const User  = require.main.require('./models/user').User
+import smtp_config from 'config/smtp.json'
+import SMTP from 'static/smtp'
+import User from 'models/user'
+import server_config from 'config/server.json'
+import { Request } from 'express'
 
-async function signUp(data): Promise<Boolean> {
+export async function signUp(data: Request): Promise<Boolean> {
     try {
         await User.sync()
-        await User.create(data)
-        const smtp = createTransport(smtp_config.connection)
+        const user = await User.create(data)
         
-        const href = `http://${server_config.ip}/user/register/verify?email=${data.email}&id=${data.id}`
+        const href = `http://${server_config.ip}${server_config.port}/user/register/verify?email=${user["email"]}&id=${user["id"]}`
 
-        await smtp.sendMail({
+        await SMTP.sendMail({
             from: smtp_config.from,
-            to: data.email,
+            to: data["email"],
             subject: 'Finish registration',
             html: `<a href="${href}">Click to finish registration</a>`
         })
         return true
     } catch(err) {
+        console.error(err)
         return false
     }
 }
@@ -27,17 +28,17 @@ enum VerifyStatus {
     OK, NOT_FOUND, ERROR
 }
 
-async function verify(req): Promise<VerifyStatus> {
+export async function verify(req: Request): Promise<VerifyStatus> {
     try {
-        const email: String = req.query.email
-        const id: Number = req.query.id
+        const email: string = req.query["email"] as string
+        const id: number = Number.parseInt(req.query["id"] as string)
 
         await User.sync()
-        const data = await User.find({
+        const data = await User.findOne({
             where: {
                 email: email,
                 id: id
-            }
+            } 
         })
 
         if(data) {
@@ -49,12 +50,9 @@ async function verify(req): Promise<VerifyStatus> {
             return VerifyStatus.NOT_FOUND
         }
     } catch(err) {
+        console.error(err)
         return VerifyStatus.ERROR
     }
 }
 
-exports.signUp = signUp
-exports.verify = {
-    function: verify,
-    status: VerifyStatus
-}
+verify.status = VerifyStatus

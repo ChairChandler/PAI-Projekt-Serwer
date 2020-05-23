@@ -1,9 +1,9 @@
-const info = require.main.require('./config/database').sequelize
-import SQL, { Model } from 'sequelize'
+import db from '../static/database'
+import * as SQL from 'sequelize'
 import User from './user'
 import Tournament from './tournament'
 
-class Contestant extends Model {
+class Contestant extends SQL.Model {
     public tournament_id: Number
     public license_id: String
     public ranking_pos: Number
@@ -37,11 +37,8 @@ Contestant.init({
     }
 }, 
 {
-    sequelize: new SQL.Sequelize(info),
+    sequelize: db,
     tableName: 'contestants'
 })
-
-Contestant.belongsTo(User, { foreignKey: { allowNull: false }, onDelete: 'CASCADE' }) // countestant is associated with one user account
-Contestant.belongsTo(Tournament, { foreignKey: { field: 'tournament_id', allowNull: false }, onDelete: 'CASCADE' }) // contestant takes part in one tournament
 
 export default Contestant

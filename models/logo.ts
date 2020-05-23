@@ -1,8 +1,8 @@
-const info = require.main.require('./config/database').sequelize
-import SQL, { Model } from 'sequelize'
+import db from '../static/database'
+import * as SQL from 'sequelize'
 import Tournament from './tournament'
 
-class Logo extends Model {
+class Logo extends SQL.Model {
     public logo: Blob
 
     public readonly createdAt: Date
@@ -16,10 +16,8 @@ Logo.init({
     }
 }, 
 {
-    sequelize: new SQL.Sequelize(info),
+    sequelize: db,
     tableName: 'logos'
 })
-
-Logo.belongsTo(Tournament, { foreignKey: { allowNull: false }, onDelete: 'CASCADE' }) // logo is attach only to one tournament
 
 export default Logo

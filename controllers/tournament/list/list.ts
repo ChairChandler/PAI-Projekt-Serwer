@@ -1,10 +1,8 @@
-import express = require('express')
+import express from 'express'
+import contestantsRoute from './contestant/contestant'
+import generalRoute from './general/general'
+
 const router = express.Router()
-const subRoutes = {
-    contestant: require('./contestant/contestant').router,
-    general: require('./general/general').router
-}
+router.use('/list', contestantsRoute, generalRoute) 
 
-router.use('/list', subRoutes.contestant, subRoutes.general) 
-
-exports.router = router
+export default router

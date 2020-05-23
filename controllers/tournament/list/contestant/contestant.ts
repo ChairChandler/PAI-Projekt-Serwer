@@ -1,4 +1,5 @@
-import express = require('express')
+import express from 'express'
+
 const router = express.Router()
 
 router.route('/contestant')
@@ -6,4 +7,4 @@ router.route('/contestant')
 
 })
 
-exports.router = router
+export default router

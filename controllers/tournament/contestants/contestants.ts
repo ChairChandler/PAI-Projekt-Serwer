@@ -1,4 +1,5 @@
-import express = require('express')
+import express from 'express'
+
 const router = express.Router()
 
 router.route('/contestants')
@@ -9,4 +10,4 @@ router.route('/contestants')
     
 })
 
-exports.router = router
+export default router
