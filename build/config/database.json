@@ -1,0 +1,9 @@
+{
+    "sequelize": {
+        "host": "localhost",
+        "port": 3306,
+        "database": "pai",
+        "username": "root",
+        "password": "root"
+    }
+}

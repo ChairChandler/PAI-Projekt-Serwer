@@ -1,0 +1,12 @@
+{
+    "connection": {
+        "host": "localhost",
+        "port": 3000,
+        "secure": false,
+        "auth": {
+            "user": "fakeuser",
+            "pass": "fakepass"
+        }
+    },
+    "from": "TMS <tms@example.com>"
+}
