@@ -42,12 +42,12 @@ User.init({
         allowNull: false,
         validate: { len: [8, 16] }
     },
-    logged: {
+    registered: {
         type: SQL.BOOLEAN,
         allowNull: false,
         defaultValue: false
     },
-    registered: {
+    forgot_password: {
         type: SQL.BOOLEAN,
         allowNull: false,
         defaultValue: false
@@ -56,6 +56,5 @@ User.init({
     sequelize: database_1.default,
     tableName: 'users'
 });
-User.hasMany(contestant_1.default); //one user can be a participant in many tournaments
-contestant_1.default.belongsTo(User, { foreignKey: { allowNull: false }, onDelete: 'CASCADE' }); // countestant is associated with one user account
+User.hasMany(contestant_1.default, { onDelete: 'CASCADE', hooks: true, foreignKey: { allowNull: false } }); //one user can be a participant in many tournaments
 exports.default = User;

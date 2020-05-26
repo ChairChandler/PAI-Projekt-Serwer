@@ -1,4 +1,8 @@
 {
     "ip": "localhost",
-    "port": 2000
+    "port": 2000,
+    "token": {
+        "secret": "secretkey",
+        "expiresIn": 86400
+    }
 }

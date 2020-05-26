@@ -4,6 +4,8 @@
         "port": 3306,
         "database": "pai",
         "username": "root",
-        "password": "root"
-    }
+        "password": "root",
+        "logging": false
+    },
+    "force_init": true
 }

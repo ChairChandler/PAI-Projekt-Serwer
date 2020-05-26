@@ -1,12 +1,13 @@
-import express from 'express'
+import express, { Request, Response}from 'express'
+import { TokenMiddleware } from 'utils/token-middleware'
 
 const router = express.Router()
 
 router.route('/contestants')
-.post((req, res) => { // add contestant to the tournament
+.post(TokenMiddleware(), async (req: Request, res: Response) => { // add contestant to the tournament
 
 })
-.get((req, res) => { // get tournament contestants list
+.get(TokenMiddleware(), async (req: Request, res: Response) => { // get tournament contestants list
     
 })
 

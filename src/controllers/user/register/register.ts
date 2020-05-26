@@ -9,9 +9,9 @@ const router = express.Router()
 router.route('/register')
 .post(async (req: Request, res: Response) => {
     if(await signUp(req.body)) {
-        res.status(HttpCode.CREATED).send()
+        res.sendStatus(HttpCode.CREATED)
     } else {
-        res.status(HttpCode.INTERNAL_SERVER_ERROR).send()
+        res.sendStatus(HttpCode.INTERNAL_SERVER_ERROR)
     }
 })
 

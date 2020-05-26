@@ -3,13 +3,13 @@ import * as SQL from 'sequelize'
 import Contestant from './contestant'
 
 class User extends SQL.Model {
-    public id: Number
-    public name: String
-    public lastname: String
-    public email: String
-    public password: String
-    public logged: Boolean
-    public registered: Boolean
+    public id: number
+    public name: string
+    public lastname: string
+    public email: string
+    public password: string
+    public registered: boolean
+    public forgot_password: boolean
 
     public readonly createdAt: Date
     public readonly updatedAt: Date
@@ -42,12 +42,12 @@ User.init({
         allowNull: false, 
         validate: {len: [8, 16]}
     },
-    logged: {
-        type: SQL.BOOLEAN, 
-        allowNull: false, 
+    registered: {
+        type: SQL.BOOLEAN,
+        allowNull: false,
         defaultValue: false
     },
-    registered: {
+    forgot_password: {
         type: SQL.BOOLEAN,
         allowNull: false,
         defaultValue: false
@@ -58,7 +58,6 @@ User.init({
     tableName: 'users'
 })
 
-User.hasMany(Contestant) //one user can be a participant in many tournaments
-Contestant.belongsTo(User, { foreignKey: { allowNull: false }, onDelete: 'CASCADE' }) // countestant is associated with one user account
+User.hasMany(Contestant, { onDelete: 'CASCADE', hooks: true, foreignKey: { allowNull: false}}) //one user can be a participant in many tournaments
 
 export default User

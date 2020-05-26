@@ -20,16 +20,11 @@ const router = express_1.default.Router();
 // sign up
 router.route('/verify')
     .get((req, res) => __awaiter(void 0, void 0, void 0, function* () {
-    switch (yield registration_1.verify(req)) {
-        case registration_1.verify.status.OK:
-            res.redirect(http_status_codes_1.default.NO_CONTENT, `http://${client_json_1.default.ip}/${client_json_1.default.endpoints.login}`);
-            break;
-        case registration_1.verify.status.NOT_FOUND:
-            res.status(http_status_codes_1.default.NOT_FOUND).send('<h1>404 not found</h1>'); //moze jak usune to bedzie zwykly 404
-            break;
-        case registration_1.verify.status.ERROR:
-            res.status(http_status_codes_1.default.INTERNAL_SERVER_ERROR).send('<h1>Cannot confimed email!</h1>');
-            break;
+    if (yield registration_1.verify(req.body)) {
+        res.status(http_status_codes_1.default.PERMANENT_REDIRECT).redirect(`http://${client_json_1.default.ip}:${client_json_1.default.port}/${client_json_1.default.endpoints.login}`);
+    }
+    else {
+        res.sendStatus(http_status_codes_1.default.INTERNAL_SERVER_ERROR);
     }
 }));
 exports.default = router;

@@ -2,10 +2,10 @@ import db from '../static/database'
 import * as SQL from 'sequelize'
 
 class Contestant extends SQL.Model {
-    public tournament_id: Number
-    public license_id: String
-    public ranking_pos: Number
-    public node_id: Number | null
+    public tournament_id: number
+    public license_id: string
+    public ranking_pos: number
+    public node_id: number | null
 
     public readonly createdAt: Date
     public readonly updatedAt: Date

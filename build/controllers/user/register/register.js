@@ -21,10 +21,10 @@ const router = express_1.default.Router();
 router.route('/register')
     .post((req, res) => __awaiter(void 0, void 0, void 0, function* () {
     if (yield registration_1.signUp(req.body)) {
-        res.status(http_status_codes_1.default.CREATED).send();
+        res.sendStatus(http_status_codes_1.default.CREATED);
     }
     else {
-        res.status(http_status_codes_1.default.INTERNAL_SERVER_ERROR).send();
+        res.sendStatus(http_status_codes_1.default.INTERNAL_SERVER_ERROR);
     }
 }));
 router.use('/register', verify_1.default);

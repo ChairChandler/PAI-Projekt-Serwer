@@ -5,15 +5,16 @@ import Logo from './logo'
 import Contestant from './contestant'
 
 class Tournament extends SQL.Model {
-    public owner_id: Number
-    public tournament_name: String
-    public description: String | null
+    public id: number
+    public owner_id: number
+    public tournament_name: string
+    public description: string | null
     public datetime: Date
-    public localization_lat: Number //latitude
-    public localization_lng: Number //longitude
-    public participants_limit: Number | null
+    public localization_lat: number //latitude
+    public localization_lng: number //longitude
+    public participants_limit: number | null
     public joining_deadline: Date
-    public current_contestants_amount: Number
+    public current_contestants_amount: number
 
     public readonly createdAt: Date
     public readonly updatedAt: Date
@@ -40,6 +41,11 @@ class Tournament extends SQL.Model {
 }
 
 Tournament.init({
+    id: {
+        type: SQL.INTEGER,
+        primaryKey: true,
+        autoIncrement: true
+    },
     owner_id: {
         type: SQL.INTEGER.UNSIGNED,
         allowNull: false
@@ -69,7 +75,10 @@ Tournament.init({
         allowNull: false,
         validate: {min: -180, max: 180}
     },
-    participants_limit: SQL.INTEGER.UNSIGNED,
+    participants_limit: {
+        type: SQL.INTEGER.UNSIGNED,
+        defaultValue: null
+    },
     joining_deadline: {
         type: SQL.DATE,
         allowNull: false,
@@ -88,10 +97,8 @@ Tournament.init({
     tableName: 'tournaments'
 })
 
-Tournament.belongsTo(User, {foreignKey: {field: 'owner_id', allowNull: false}, onDelete: 'CASCADE'}) // tournament has one owner     
-Tournament.hasMany(Logo) // tournament can have many logos
-Logo.belongsTo(Tournament, { foreignKey: { allowNull: false }, onDelete: 'CASCADE' }) // logo is attach only to one tournament
-Contestant.belongsTo(Tournament, { foreignKey: { field: 'tournament_id', allowNull: false }, onDelete: 'CASCADE' }) // contestant takes part in one tournament
-User.hasMany(Tournament) //one user can be a organizer of many tournaments
+Tournament.hasMany(Logo, { foreignKey: { allowNull: false }, onDelete: 'CASCADE', hooks: true}) // tournament can have many logos
+Tournament.hasMany(Contestant, { foreignKey: { field: 'tournament_id', allowNull: false }, onDelete: 'CASCADE', hooks: true}) // contestant takes part in one tournament
+User.hasMany(Tournament, {foreignKey: {field: 'owner_id', allowNull: false}, onDelete: 'CASCADE', hooks: true}) //one user can be a organizer of many tournaments
 
 export default Tournament

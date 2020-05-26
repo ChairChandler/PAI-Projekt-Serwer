@@ -1,9 +1,10 @@
-import express from 'express'
+import express, { Request, Response}from 'express'
+import { TokenMiddleware } from 'utils/token-middleware'
 
 const router = express.Router()
 
 router.route('/contestant')
-.get((req, res) => { // get contestant future tournaments list
+.get(TokenMiddleware(), async (req: Request, res: Response) => { // get contestant future tournaments list
 
 })
 

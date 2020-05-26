@@ -2,52 +2,77 @@ import smtp_config from 'config/smtp.json'
 import SMTP from 'static/smtp'
 import User from 'models/user'
 import server_config from 'config/server.json'
-import { Request } from 'express'
+import db from 'static/database'
+import * as jwt from 'jsonwebtoken'
+import * as Crypto from 'crypto'
+import * as API from 'api/login'
 
-export async function signIn(data: Request): Promise<Boolean> {
+export async function signIn(body: API.Login.Input): Promise<{token: string, expiresIn: number}|null> {
     try {
         const user = await User.findOne({
             where: {
-                email: data["email"],
-                password: data["password"]
+                email: body.email,
+                password: body.password
             }
         })
 
-        user.logged = true
-        return true
+        if(!user) {
+            throw Error("user not found")
+        } else if(!user.registered) {
+            throw Error("user hasn't finished registration")
+        }
+        
+        const id =  Crypto.randomBytes(64).toString('hex')
+        const token = jwt.sign({id: id}, server_config.token.secret, {expiresIn: server_config.token.expiresIn}) // 24 hours
+        return {token: token, expiresIn: server_config.token.expiresIn}
     } catch(err) {
         console.error(err)
-        return false
+        return null
     }
 }
 
-export async function remindPassword(data: Request): Promise<Boolean> {
+export async function remindPassword(body: API.RemindPassword.Input): Promise<Boolean> {
+    const t = await db.transaction()
+    
     try {
-        await User.findOne({where: {email: data["email"]}})
+        let user = await User.findOne({where: {email: body.email}})
+        if(!user) {
+            throw Error("invalid email")
+        }
+
+        await user.update({forgot_password: true})
+
         await SMTP.sendMail({
             from: smtp_config.from,
-            to: data["email"],
+            to: body.email,
             subject: "Create new password",
             html: `
-            <form method=POST action="http://${server_config.ip}${server_config.port}/user/login/reset">
-                <input type="hidden" value="${data["email"]}" name="email">
-                <label for="password"></label>
-                <input type="password" id="password" name="password">
-                <input type="submit">
-            </form>
+                <form method="post" action="http://${server_config.ip}:${server_config.port}/user/login/reset">
+                    <input type="hidden" value="${body.email}" name="email">
+                    <label for="password">Password</label>
+                    <input type="password" id="password" name="password">
+                    <input type="submit" value="Submit">
+                </form>
             `
         })
+        await t.commit()
         return true
     } catch(err) {
+        await t.rollback()
         console.error(err)
         return false
     }
 }
 
-export async function changePassword(data: Request): Promise<Boolean> {
+export async function changePassword(body: API.ChangePassword.Input): Promise<Boolean> {
     try {
-        const user = await User.findOne({where: {email: data["email"]}})
-        user.password = data["password"]
+        const user = await User.findOne({where: {email: body.email}})
+        if(!user.forgot_password) {
+            throw Error("user hasn't requested a password change")
+        }
+
+        await user.update({password: body.password, forgot_password: false})
+        
         return true
     } catch(err) {
         console.error(err)

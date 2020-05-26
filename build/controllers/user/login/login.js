@@ -15,22 +15,27 @@ Object.defineProperty(exports, "__esModule", { value: true });
 const express_1 = __importDefault(require("express"));
 const http_status_codes_1 = __importDefault(require("http-status-codes"));
 const logging_1 = require("services/logging");
+const reset_1 = __importDefault(require("./reset/reset"));
 const router = express_1.default.Router();
 router.route('/login')
     .put((req, res) => __awaiter(void 0, void 0, void 0, function* () {
-    if (yield logging_1.signIn(req)) {
-        res.status(http_status_codes_1.default.NO_CONTENT).send();
+    const token_info = yield logging_1.signIn(req.body);
+    if (token_info) {
+        const expiration_date = new Date(new Date().getTime() + token_info.expiresIn);
+        res.cookie('token', token_info.token, { secure: true, expires: expiration_date });
+        res.sendStatus(http_status_codes_1.default.OK);
     }
     else {
-        res.status(http_status_codes_1.default.NOT_FOUND).send();
+        res.sendStatus(http_status_codes_1.default.INTERNAL_SERVER_ERROR);
     }
 }))
     .get((req, res) => __awaiter(void 0, void 0, void 0, function* () {
-    if (yield logging_1.remindPassword(req)) {
-        res.status(http_status_codes_1.default.NO_CONTENT).send();
+    if (yield logging_1.remindPassword(req.body)) {
+        res.sendStatus(http_status_codes_1.default.NO_CONTENT);
     }
     else {
-        res.status(http_status_codes_1.default.NOT_FOUND).send();
+        res.sendStatus(http_status_codes_1.default.NOT_FOUND);
     }
 }));
+router.use('/login', reset_1.default);
 exports.default = router;

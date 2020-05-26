@@ -4,11 +4,6 @@ export namespace Login {
         email: string
         password: string
     }
-
-    export interface Output {
-        auth: boolean
-        token: string
-    }
 }
 
 // GET USER/LOGIN

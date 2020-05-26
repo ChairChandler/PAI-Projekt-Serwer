@@ -16,18 +16,46 @@ const smtp_json_1 = __importDefault(require("config/smtp.json"));
 const smtp_1 = __importDefault(require("static/smtp"));
 const user_1 = __importDefault(require("models/user"));
 const server_json_1 = __importDefault(require("config/server.json"));
-function signUp(data) {
+const database_1 = __importDefault(require("static/database"));
+function signUp(body) {
     return __awaiter(this, void 0, void 0, function* () {
+        const t = yield database_1.default.transaction();
         try {
-            yield user_1.default.sync();
-            const user = yield user_1.default.create(data);
-            const href = `http://${server_json_1.default.ip}${server_json_1.default.port}/user/register/verify?email=${user["email"]}&id=${user["id"]}`;
+            const user = yield user_1.default.create(body, { transaction: t });
+            const href = `http://${server_json_1.default.ip}:${server_json_1.default.port}/user/register/verify?email=${user["email"]}&id=${user["id"]}`;
             yield smtp_1.default.sendMail({
                 from: smtp_json_1.default.from,
-                to: data["email"],
+                to: body.email,
                 subject: 'Finish registration',
                 html: `<a href="${href}">Click to finish registration</a>`
             });
+            yield t.commit();
+            return true;
+        }
+        catch (err) {
+            yield t.rollback();
+            console.error(err);
+            return false;
+        }
+    });
+}
+exports.signUp = signUp;
+function verify(body) {
+    return __awaiter(this, void 0, void 0, function* () {
+        try {
+            const data = yield user_1.default.findOne({
+                where: {
+                    email: body.email,
+                    id: Number.parseInt(body.id)
+                }
+            });
+            if (!data) {
+                throw Error("user not found");
+            }
+            if (data.registered) {
+                throw Error("user has been registered before");
+            }
+            yield data.update({ registered: true });
             return true;
         }
         catch (err) {
@@ -36,40 +64,4 @@ function signUp(data) {
         }
     });
 }
-exports.signUp = signUp;
-var VerifyStatus;
-(function (VerifyStatus) {
-    VerifyStatus[VerifyStatus["OK"] = 0] = "OK";
-    VerifyStatus[VerifyStatus["NOT_FOUND"] = 1] = "NOT_FOUND";
-    VerifyStatus[VerifyStatus["ERROR"] = 2] = "ERROR";
-})(VerifyStatus || (VerifyStatus = {}));
-function verify(req) {
-    return __awaiter(this, void 0, void 0, function* () {
-        try {
-            const email = req.query["email"];
-            const id = Number.parseInt(req.query["id"]);
-            yield user_1.default.sync();
-            const data = yield user_1.default.findOne({
-                where: {
-                    email: email,
-                    id: id
-                }
-            });
-            if (data) {
-                yield data.update({
-                    registered: true
-                });
-                return VerifyStatus.OK;
-            }
-            else {
-                return VerifyStatus.NOT_FOUND;
-            }
-        }
-        catch (err) {
-            console.error(err);
-            return VerifyStatus.ERROR;
-        }
-    });
-}
 exports.verify = verify;
-verify.status = VerifyStatus;

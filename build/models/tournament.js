@@ -34,6 +34,11 @@ class Tournament extends SQL.Model {
     }
 }
 Tournament.init({
+    id: {
+        type: SQL.INTEGER,
+        primaryKey: true,
+        autoIncrement: true
+    },
     owner_id: {
         type: SQL.INTEGER.UNSIGNED,
         allowNull: false
@@ -63,7 +68,10 @@ Tournament.init({
         allowNull: false,
         validate: { min: -180, max: 180 }
     },
-    participants_limit: SQL.INTEGER.UNSIGNED,
+    participants_limit: {
+        type: SQL.INTEGER.UNSIGNED,
+        defaultValue: null
+    },
     joining_deadline: {
         type: SQL.DATE,
         allowNull: false,
@@ -81,9 +89,7 @@ Tournament.init({
     sequelize: database_1.default,
     tableName: 'tournaments'
 });
-Tournament.belongsTo(user_1.default, { foreignKey: { field: 'owner_id', allowNull: false }, onDelete: 'CASCADE' }); // tournament has one owner     
-Tournament.hasMany(logo_1.default); // tournament can have many logos
-logo_1.default.belongsTo(Tournament, { foreignKey: { allowNull: false }, onDelete: 'CASCADE' }); // logo is attach only to one tournament
-contestant_1.default.belongsTo(Tournament, { foreignKey: { field: 'tournament_id', allowNull: false }, onDelete: 'CASCADE' }); // contestant takes part in one tournament
-user_1.default.hasMany(Tournament); //one user can be a organizer of many tournaments
+Tournament.hasMany(logo_1.default, { foreignKey: { allowNull: false }, onDelete: 'CASCADE', hooks: true }); // tournament can have many logos
+Tournament.hasMany(contestant_1.default, { foreignKey: { field: 'tournament_id', allowNull: false }, onDelete: 'CASCADE', hooks: true }); // contestant takes part in one tournament
+user_1.default.hasMany(Tournament, { foreignKey: { field: 'owner_id', allowNull: false }, onDelete: 'CASCADE', hooks: true }); //one user can be a organizer of many tournaments
 exports.default = Tournament;
