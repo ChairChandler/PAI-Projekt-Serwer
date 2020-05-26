@@ -1,10 +1,10 @@
 // GET TOURNAMENT/LIST/GENERAL
-export namespace TournamentGeneral {
-    export interface Input {
+export namespace TOURNAMENT.LIST.GENERAL.GET {
+    export interface INPUT {
         amount: number | null
     }
 
-    export interface Output {
+    export interface OUTPUT {
         tournaments: {
             id: number,
             name: string
@@ -13,12 +13,12 @@ export namespace TournamentGeneral {
 }
 
 // GET TOURNAMENT/INFO
-export namespace TournamentInfo {
-    export interface Input {
+export namespace TOURNAMENT.INFO.GET {
+    export interface INPUT {
         id: number
     }
 
-    export interface Output {
+    export interface OUTPUT {
         name: string
         description: string | null
         organizer: string

@@ -17,6 +17,7 @@ const token_middleware_1 = require("utils/token-middleware");
 const router = express_1.default.Router();
 router.route('/contestants')
     .post(token_middleware_1.TokenMiddleware(), (req, res) => __awaiter(void 0, void 0, void 0, function* () {
+    res.sendStatus(200).send('OK');
 }))
     .get(token_middleware_1.TokenMiddleware(), (req, res) => __awaiter(void 0, void 0, void 0, function* () {
 }));

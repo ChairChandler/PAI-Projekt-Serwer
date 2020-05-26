@@ -9,8 +9,7 @@ router.route('/login')
 .put(async (req: Request, res: Response) => { // sign in
     const token_info = await signIn(req.body)
     if(token_info) {
-        const expiration_date = new Date(new Date().getTime() + token_info.expiresIn)
-        res.cookie('token', token_info.token, {secure: true, expires: expiration_date, httpOnly: true})
+        res.cookie('token', token_info.token, {maxAge: token_info.expiresIn * 1000, httpOnly: true})
         res.sendStatus(HttpCode.OK)
     } else {
         res.sendStatus(HttpCode.INTERNAL_SERVER_ERROR)

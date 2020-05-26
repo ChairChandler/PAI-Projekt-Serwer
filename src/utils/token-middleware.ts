@@ -4,8 +4,7 @@ import * as jwt from 'jsonwebtoken'
 import server_config from 'config/server.json'
 
 export function TokenMiddleware() {
-    return (req: Request, res: Response, next: Function): void => {
-        console.log(req.signedCookies, req.cookies)
+    return (req: Request, res: Response, next) => {
         const token = req.cookies["token"] as string
         if(!token) {
             res.status(HttpCode.UNAUTHORIZED).send({message: 'No token provided.'})

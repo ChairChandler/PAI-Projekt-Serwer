@@ -3,7 +3,8 @@ import User from 'models/user'
 import * as API from 'api/tournament'
 import Logo from 'models/logo'
 
-export async function getTournamentList(body: API.TournamentGeneral.Input): Promise<API.TournamentGeneral.Output> {
+export async function getTournamentList(body: API.TOURNAMENT.LIST.GENERAL.GET.INPUT): 
+Promise<API.TOURNAMENT.LIST.GENERAL.GET.OUTPUT> {
     try {
         let tournaments: Tournament[]
         if(body.amount) {
@@ -18,7 +19,8 @@ export async function getTournamentList(body: API.TournamentGeneral.Input): Prom
     }
 }
 
-export async function getTournamentInfo(body: API.TournamentInfo.Input): Promise<API.TournamentInfo.Output> {
+export async function getTournamentInfo(body: API.TOURNAMENT.INFO.GET.INPUT): 
+Promise<API.TOURNAMENT.INFO.GET.OUTPUT> {
     try {
         const info = await Tournament.findOne({where: {id: body.id}})
         const owner = await User.findOne({where: {id: info.owner_id}})

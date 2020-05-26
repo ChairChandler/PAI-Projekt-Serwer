@@ -7,7 +7,7 @@ import * as jwt from 'jsonwebtoken'
 import * as Crypto from 'crypto'
 import * as API from 'api/login'
 
-export async function signIn(body: API.Login.Input): Promise<{token: string, expiresIn: number}|null> {
+export async function signIn(body: API.USER.LOGIN.PUT.INPUT): Promise<{token: string, expiresIn: number}|null> {
     try {
         const user = await User.findOne({
             where: {
@@ -31,7 +31,7 @@ export async function signIn(body: API.Login.Input): Promise<{token: string, exp
     }
 }
 
-export async function remindPassword(body: API.RemindPassword.Input): Promise<Boolean> {
+export async function remindPassword(body: API.USER.LOGIN.GET.INPUT): Promise<Boolean> {
     const t = await db.transaction()
     
     try {
@@ -64,7 +64,7 @@ export async function remindPassword(body: API.RemindPassword.Input): Promise<Bo
     }
 }
 
-export async function changePassword(body: API.ChangePassword.Input): Promise<Boolean> {
+export async function changePassword(body: API.USER.LOGIN.RESET.POST.INPUT): Promise<Boolean> {
     try {
         const user = await User.findOne({where: {email: body.email}})
         if(!user.forgot_password) {

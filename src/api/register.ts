@@ -1,6 +1,6 @@
 // POST USER/REGISTER
-export namespace Register {
-    export interface Input {
+export namespace USER.REGISTER.POST {
+    export interface INPUT {
         name: string
         lastname: string
         email: string
@@ -9,8 +9,8 @@ export namespace Register {
 }
 
 // GET USER/REGISTER/VERIFY
-export namespace Verify {
-    export interface Input {
+export namespace USER.REGISTER.VERIFY.GET {
+    export interface INPUT {
         id: string
         email: string
     }

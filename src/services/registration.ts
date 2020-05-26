@@ -5,7 +5,7 @@ import server_config from 'config/server.json'
 import db from 'static/database'
 import * as API from 'api/register'
 
-export async function signUp(body: API.Register.Input): Promise<Boolean> {
+export async function signUp(body: API.USER.REGISTER.POST.INPUT): Promise<Boolean> {
     const t = await db.transaction()
 
     try {
@@ -27,7 +27,7 @@ export async function signUp(body: API.Register.Input): Promise<Boolean> {
     }
 }
 
-export async function verify(body: API.Verify.Input): Promise<Boolean> {
+export async function verify(body: API.USER.REGISTER.VERIFY.GET.INPUT): Promise<Boolean> {
     try {
         const data = await User.findOne({
             where: {

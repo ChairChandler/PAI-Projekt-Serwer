@@ -17,10 +17,12 @@ const controller_1 = __importDefault(require("controllers/controller"));
 const server_json_1 = __importDefault(require("config/server.json"));
 const tables_1 = __importDefault(require("init/tables"));
 const query_params_middleware_1 = require("utils/query-params-middleware");
+const cookie_parser_1 = __importDefault(require("cookie-parser"));
 function main() {
     return __awaiter(this, void 0, void 0, function* () {
         yield tables_1.default();
         const app = express_1.default();
+        app.use(cookie_parser_1.default());
         app.use(express_1.default.urlencoded({ extended: true }));
         app.use(express_1.default.json());
         app.use(query_params_middleware_1.QueryParamsToJson());
