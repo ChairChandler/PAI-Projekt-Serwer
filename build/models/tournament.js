@@ -13,35 +13,35 @@ Object.defineProperty(exports, "__esModule", { value: true });
 const database_1 = __importDefault(require("../static/database"));
 const SQL = __importStar(require("sequelize"));
 const user_1 = __importDefault(require("./user"));
-const logo_1 = __importDefault(require("./logo"));
-const contestant_1 = __importDefault(require("./contestant"));
 class Tournament extends SQL.Model {
     static isAfterCurrentDay(val) {
         const now = new Date();
-        if (!(val.getFullYear() >= now.getFullYear() &&
-            val.getMonth() >= now.getMonth() &&
-            val.getDay() > now.getDay())) {
+        if (now >= val) {
             throw Error("date have to be minimum 1 day later than the current date");
         }
     }
     static isBeforeTournamentDay(val) {
         const td = this["datetime"];
-        if (!(val.getFullYear() <= td.getFullYear() &&
-            val.getMonth() <= td.getMonth() &&
-            val.getDay() < td.getDay())) {
+        if (val >= td) {
             throw Error("date have to be minimum 1 day before the tournament date");
         }
     }
 }
 Tournament.init({
     id: {
-        type: SQL.INTEGER,
+        type: SQL.INTEGER.UNSIGNED,
         primaryKey: true,
         autoIncrement: true
     },
     owner_id: {
         type: SQL.INTEGER.UNSIGNED,
-        allowNull: false
+        allowNull: false,
+        references: {
+            model: user_1.default,
+            key: 'id'
+        },
+        onDelete: 'CASCADE',
+        onUpdate: 'CASCADE'
     },
     tournament_name: {
         type: SQL.STRING,
@@ -89,7 +89,4 @@ Tournament.init({
     sequelize: database_1.default,
     tableName: 'tournaments'
 });
-Tournament.hasMany(logo_1.default, { foreignKey: { allowNull: false }, onDelete: 'CASCADE', hooks: true }); // tournament can have many logos
-Tournament.hasMany(contestant_1.default, { foreignKey: { field: 'tournament_id', allowNull: false }, onDelete: 'CASCADE', hooks: true }); // contestant takes part in one tournament
-user_1.default.hasMany(Tournament, { foreignKey: { field: 'owner_id', allowNull: false }, onDelete: 'CASCADE', hooks: true }); //one user can be a organizer of many tournaments
 exports.default = Tournament;

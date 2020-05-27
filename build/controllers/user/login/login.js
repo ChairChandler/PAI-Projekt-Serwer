@@ -21,6 +21,7 @@ router.route('/login')
     .put((req, res) => __awaiter(void 0, void 0, void 0, function* () {
     const token_info = yield logging_1.signIn(req.body);
     if (token_info) {
+        res.cookie('id', token_info.user_id, { httpOnly: true });
         res.cookie('token', token_info.token, { maxAge: token_info.expiresIn * 1000, httpOnly: true });
         res.sendStatus(http_status_codes_1.default.OK);
     }

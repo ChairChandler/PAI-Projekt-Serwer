@@ -1,8 +1,8 @@
 import db from 'static/database'
-import Contestant from 'models/contestant'
-import Logo from 'models/logo'
-import Tournament from 'models/tournament'
 import User from 'models/user'
+import Contestant from 'models/contestant'
+import Tournament from 'models/tournament'
+import Logo from 'models/logo'
 import * as db_config from 'config/database.json'
 
 export default async function init() {

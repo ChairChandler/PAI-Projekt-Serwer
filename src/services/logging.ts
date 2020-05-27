@@ -7,7 +7,7 @@ import * as jwt from 'jsonwebtoken'
 import * as Crypto from 'crypto'
 import * as API from 'api/login'
 
-export async function signIn(body: API.USER.LOGIN.PUT.INPUT): Promise<{token: string, expiresIn: number}|null> {
+export async function signIn(body: API.USER.LOGIN.PUT.INPUT): Promise<{user_id: number, token: string, expiresIn: number}|null> {
     try {
         const user = await User.findOne({
             where: {
@@ -24,7 +24,7 @@ export async function signIn(body: API.USER.LOGIN.PUT.INPUT): Promise<{token: st
         
         const id =  Crypto.randomBytes(64).toString('hex')
         const token = jwt.sign({id: id}, server_config.token.secret, {expiresIn: server_config.token.expiresIn}) // 24 hours
-        return {token: token, expiresIn: server_config.token.expiresIn}
+        return {user_id: user.id, token: token, expiresIn: server_config.token.expiresIn}
     } catch(err) {
         console.error(err)
         return null

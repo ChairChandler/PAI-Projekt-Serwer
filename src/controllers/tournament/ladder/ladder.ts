@@ -1,5 +1,5 @@
 import express, {Request, Response} from 'express'
-import { TokenMiddleware } from 'utils/token-middleware'
+import { TokenMiddleware } from 'middlewares/token-middleware'
 
 const router = express.Router()
 

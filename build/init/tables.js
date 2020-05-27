@@ -20,10 +20,10 @@ var __importStar = (this && this.__importStar) || function (mod) {
 };
 Object.defineProperty(exports, "__esModule", { value: true });
 const database_1 = __importDefault(require("static/database"));
-const contestant_1 = __importDefault(require("models/contestant"));
-const logo_1 = __importDefault(require("models/logo"));
-const tournament_1 = __importDefault(require("models/tournament"));
 const user_1 = __importDefault(require("models/user"));
+const contestant_1 = __importDefault(require("models/contestant"));
+const tournament_1 = __importDefault(require("models/tournament"));
+const logo_1 = __importDefault(require("models/logo"));
 const db_config = __importStar(require("config/database.json"));
 function init() {
     return __awaiter(this, void 0, void 0, function* () {

@@ -9,6 +9,7 @@ router.route('/login')
 .put(async (req: Request, res: Response) => { // sign in
     const token_info = await signIn(req.body)
     if(token_info) {
+        res.cookie('id', token_info.user_id, {httpOnly: true})
         res.cookie('token', token_info.token, {maxAge: token_info.expiresIn * 1000, httpOnly: true})
         res.sendStatus(HttpCode.OK)
     } else {

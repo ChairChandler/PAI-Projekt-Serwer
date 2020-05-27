@@ -12,12 +12,11 @@ var __importStar = (this && this.__importStar) || function (mod) {
 Object.defineProperty(exports, "__esModule", { value: true });
 const database_1 = __importDefault(require("../static/database"));
 const SQL = __importStar(require("sequelize"));
-const contestant_1 = __importDefault(require("./contestant"));
 class User extends SQL.Model {
 }
 User.init({
     id: {
-        type: SQL.INTEGER,
+        type: SQL.INTEGER.UNSIGNED,
         primaryKey: true,
         autoIncrement: true
     },
@@ -56,5 +55,4 @@ User.init({
     sequelize: database_1.default,
     tableName: 'users'
 });
-User.hasMany(contestant_1.default, { onDelete: 'CASCADE', hooks: true, foreignKey: { allowNull: false } }); //one user can be a participant in many tournaments
 exports.default = User;

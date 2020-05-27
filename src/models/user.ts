@@ -1,6 +1,5 @@
 import db from '../static/database'
 import * as SQL from 'sequelize'
-import Contestant from './contestant'
 
 class User extends SQL.Model {
     public id: number
@@ -17,7 +16,7 @@ class User extends SQL.Model {
 
 User.init({
     id: {
-        type: SQL.INTEGER,
+        type: SQL.INTEGER.UNSIGNED,
         primaryKey: true,
         autoIncrement: true
     },
@@ -57,7 +56,5 @@ User.init({
     sequelize: db,
     tableName: 'users'
 })
-
-User.hasMany(Contestant, { onDelete: 'CASCADE', hooks: true, foreignKey: { allowNull: false}}) //one user can be a participant in many tournaments
 
 export default User

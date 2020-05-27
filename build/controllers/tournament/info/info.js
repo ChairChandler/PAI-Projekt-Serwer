@@ -15,7 +15,7 @@ Object.defineProperty(exports, "__esModule", { value: true });
 const express_1 = __importDefault(require("express"));
 const http_status_codes_1 = __importDefault(require("http-status-codes"));
 const tournament_1 = require("services/tournament");
-const token_middleware_1 = require("utils/token-middleware");
+const token_middleware_1 = require("middlewares/token-middleware");
 const router = express_1.default.Router();
 router.route('/info')
     .get((req, res) => __awaiter(void 0, void 0, void 0, function* () {
@@ -28,7 +28,19 @@ router.route('/info')
     }
 }))
     .put(token_middleware_1.TokenMiddleware(), (req, res) => __awaiter(void 0, void 0, void 0, function* () {
+    if (yield tournament_1.modifyTournament(req.body, Number.parseInt(req.cookies["id"]))) {
+        res.sendStatus(http_status_codes_1.default.NO_CONTENT);
+    }
+    else {
+        res.sendStatus(http_status_codes_1.default.INTERNAL_SERVER_ERROR);
+    }
 }))
     .post(token_middleware_1.TokenMiddleware(), (req, res) => __awaiter(void 0, void 0, void 0, function* () {
+    if (yield tournament_1.createTournament(req.body, Number.parseInt(req.cookies["id"]))) {
+        res.sendStatus(http_status_codes_1.default.NO_CONTENT);
+    }
+    else {
+        res.sendStatus(http_status_codes_1.default.INTERNAL_SERVER_ERROR);
+    }
 }));
 exports.default = router;

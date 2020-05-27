@@ -13,7 +13,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 };
 Object.defineProperty(exports, "__esModule", { value: true });
 const express_1 = __importDefault(require("express"));
-const token_middleware_1 = require("utils/token-middleware");
+const token_middleware_1 = require("middlewares/token-middleware");
 const router = express_1.default.Router();
 router.route('/contestant')
     .get(token_middleware_1.TokenMiddleware(), (req, res) => __awaiter(void 0, void 0, void 0, function* () {

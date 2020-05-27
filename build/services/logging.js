@@ -43,7 +43,7 @@ function signIn(body) {
             }
             const id = Crypto.randomBytes(64).toString('hex');
             const token = jwt.sign({ id: id }, server_json_1.default.token.secret, { expiresIn: server_json_1.default.token.expiresIn }); // 24 hours
-            return { token: token, expiresIn: server_json_1.default.token.expiresIn };
+            return { user_id: user.id, token: token, expiresIn: server_json_1.default.token.expiresIn };
         }
         catch (err) {
             console.error(err);

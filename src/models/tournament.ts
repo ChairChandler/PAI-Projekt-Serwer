@@ -1,8 +1,6 @@
 import db from '../static/database'
 import * as SQL from 'sequelize'
 import User from './user'
-import Logo from './logo'
-import Contestant from './contestant'
 
 class Tournament extends SQL.Model {
     public id: number
@@ -21,20 +19,14 @@ class Tournament extends SQL.Model {
 
     public static isAfterCurrentDay(val: Date) {
         const now = new Date()
-        if(!(
-            val.getFullYear() >= now.getFullYear() && 
-            val.getMonth() >= now.getMonth() &&
-            val.getDay() > now.getDay())) {
+        if(now >= val) {
                 throw Error("date have to be minimum 1 day later than the current date")
         }
     } 
 
     public static isBeforeTournamentDay(val: Date) {
         const td = this["datetime"]
-        if(!(
-            val.getFullYear() <= td.getFullYear() && 
-            val.getMonth() <= td.getMonth() &&
-            val.getDay() < td.getDay())) {
+        if(val >= td) {
                 throw Error("date have to be minimum 1 day before the tournament date")
         }
     } 
@@ -42,13 +34,19 @@ class Tournament extends SQL.Model {
 
 Tournament.init({
     id: {
-        type: SQL.INTEGER,
+        type: SQL.INTEGER.UNSIGNED,
         primaryKey: true,
         autoIncrement: true
     },
-    owner_id: {
+    owner_id: { //one user can be a organizer of many tournaments
         type: SQL.INTEGER.UNSIGNED,
-        allowNull: false
+        allowNull: false,
+        references: {
+            model: User,
+            key: 'id'
+        },
+        onDelete: 'CASCADE',
+        onUpdate: 'CASCADE'
     },
     tournament_name: {
         type: SQL.STRING, 
@@ -96,9 +94,5 @@ Tournament.init({
     sequelize: db,
     tableName: 'tournaments'
 })
-
-Tournament.hasMany(Logo, { foreignKey: { allowNull: false }, onDelete: 'CASCADE', hooks: true}) // tournament can have many logos
-Tournament.hasMany(Contestant, { foreignKey: { field: 'tournament_id', allowNull: false }, onDelete: 'CASCADE', hooks: true}) // contestant takes part in one tournament
-User.hasMany(Tournament, {foreignKey: {field: 'owner_id', allowNull: false}, onDelete: 'CASCADE', hooks: true}) //one user can be a organizer of many tournaments
 
 export default Tournament

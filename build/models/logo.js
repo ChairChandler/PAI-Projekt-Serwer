@@ -12,9 +12,25 @@ var __importStar = (this && this.__importStar) || function (mod) {
 Object.defineProperty(exports, "__esModule", { value: true });
 const database_1 = __importDefault(require("../static/database"));
 const SQL = __importStar(require("sequelize"));
+const tournament_1 = __importDefault(require("models/tournament"));
 class Logo extends SQL.Model {
 }
 Logo.init({
+    id: {
+        type: SQL.INTEGER.UNSIGNED,
+        primaryKey: true,
+        autoIncrement: true
+    },
+    tournament_id: {
+        type: SQL.INTEGER.UNSIGNED,
+        allowNull: false,
+        references: {
+            model: tournament_1.default,
+            key: 'id'
+        },
+        onDelete: 'CASCADE',
+        onUpdate: 'CASCADE'
+    },
     logo: {
         type: SQL.BLOB,
         allowNull: false
