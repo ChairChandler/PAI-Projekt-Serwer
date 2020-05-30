@@ -5,6 +5,7 @@ import models_init from 'init/tables'
 import { QueryParamsToJson } from 'middlewares/query-params-middleware'
 import { AccessLog } from 'middlewares/access-log-middleware'
 import cookieparser from 'cookie-parser'
+import 'init/date'
 
 async function main() {
     await models_init()

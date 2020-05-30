@@ -13,12 +13,26 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 };
 Object.defineProperty(exports, "__esModule", { value: true });
 const express_1 = __importDefault(require("express"));
+const http_status_codes_1 = __importDefault(require("http-status-codes"));
 const token_middleware_1 = require("middlewares/token-middleware");
+const contestants_1 = require("services/contestants");
 const router = express_1.default.Router();
 router.route('/contestants')
     .post(token_middleware_1.TokenMiddleware(), (req, res) => __awaiter(void 0, void 0, void 0, function* () {
-    res.sendStatus(200).send('OK');
+    if (yield contestants_1.createContestant(req.body, Number.parseInt(req.cookies["id"]))) {
+        res.sendStatus(http_status_codes_1.default.NO_CONTENT);
+    }
+    else {
+        res.sendStatus(http_status_codes_1.default.INTERNAL_SERVER_ERROR);
+    }
 }))
     .get(token_middleware_1.TokenMiddleware(), (req, res) => __awaiter(void 0, void 0, void 0, function* () {
+    let data;
+    if ((data = yield contestants_1.getContestants(req.body, Number.parseInt(req.cookies["id"])))) {
+        res.status(http_status_codes_1.default.OK).send(data);
+    }
+    else {
+        res.sendStatus(http_status_codes_1.default.UNAUTHORIZED);
+    }
 }));
 exports.default = router;

@@ -51,8 +51,7 @@ User.init({
         allowNull: false,
         defaultValue: false
     }
-}, 
-{
+},  {
     sequelize: db,
     tableName: 'users'
 })

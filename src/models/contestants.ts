@@ -52,8 +52,7 @@ Contestant.init({
         type: SQL.INTEGER.UNSIGNED,
         defaultValue: null
     }
-}, 
-{
+},  {
     sequelize: db,
     tableName: 'contestants'
 })

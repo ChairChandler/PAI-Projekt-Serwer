@@ -38,9 +38,9 @@ exports.getTournamentList = getTournamentList;
 function getTournamentInfo(body) {
     return __awaiter(this, void 0, void 0, function* () {
         try {
-            const info = yield tournament_1.default.findOne({ where: { id: body.id } });
+            const info = yield tournament_1.default.findOne({ where: { id: body.tournament_id } });
             const owner = yield user_1.default.findOne({ where: { id: info.owner_id } });
-            const logos = yield logo_1.default.findAll({ where: { tournament_id: body.id } });
+            const logos = yield logo_1.default.findAll({ where: { tournament_id: body.tournament_id } });
             const imgData = [];
             for (let img of logos) {
                 imgData.push({

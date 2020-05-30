@@ -23,9 +23,9 @@ Promise<API.TOURNAMENT.LIST.GENERAL.GET.OUTPUT> {
 export async function getTournamentInfo(body: API.TOURNAMENT.INFO.GET.INPUT): 
 Promise<API.TOURNAMENT.INFO.GET.OUTPUT> {
     try {
-        const info = await Tournament.findOne({where: {id: body.id}})
+        const info = await Tournament.findOne({where: {id: body.tournament_id}})
         const owner = await User.findOne({where: {id: info.owner_id}})
-        const logos = await Logo.findAll({where: {tournament_id: body.id}})
+        const logos = await Logo.findAll({where: {tournament_id: body.tournament_id}})
         const imgData = []
         for(let img of logos) {
             imgData.push({

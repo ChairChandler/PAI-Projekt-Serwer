@@ -15,14 +15,12 @@ const SQL = __importStar(require("sequelize"));
 const user_1 = __importDefault(require("./user"));
 class Tournament extends SQL.Model {
     static isAfterCurrentDay(val) {
-        const now = new Date();
-        if (now >= val) {
+        if (new Date().getOnlyDate().getTime() >= val.getOnlyDate().getTime()) {
             throw Error("date have to be minimum 1 day later than the current date");
         }
     }
     static isBeforeTournamentDay(val) {
-        const td = this["datetime"];
-        if (val >= td) {
+        if (val.getOnlyDate().getTime() >= this["datetime"].getOnlyDate().getTime()) {
             throw Error("date have to be minimum 1 day before the tournament date");
         }
     }

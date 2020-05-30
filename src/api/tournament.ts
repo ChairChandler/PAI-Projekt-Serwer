@@ -10,7 +10,7 @@ export namespace TOURNAMENT.LIST.GENERAL.GET {
 // GET TOURNAMENT/INFO
 export namespace TOURNAMENT.INFO.GET {
     export interface INPUT {
-        id: number
+        tournament_id: number
     }
 
     export interface OUTPUT {

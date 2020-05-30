@@ -19,6 +19,7 @@ const tables_1 = __importDefault(require("init/tables"));
 const query_params_middleware_1 = require("middlewares/query-params-middleware");
 const access_log_middleware_1 = require("middlewares/access-log-middleware");
 const cookie_parser_1 = __importDefault(require("cookie-parser"));
+require("init/date");
 function main() {
     return __awaiter(this, void 0, void 0, function* () {
         yield tables_1.default();

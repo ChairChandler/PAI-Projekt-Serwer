@@ -1,6 +1,6 @@
 import db from 'static/database'
 import User from 'models/user'
-import Contestant from 'models/contestant'
+import Contestant from 'models/contestants'
 import Tournament from 'models/tournament'
 import Logo from 'models/logo'
 import * as db_config from 'config/database.json'

@@ -18,16 +18,14 @@ class Tournament extends SQL.Model {
     public readonly updatedAt: Date
 
     public static isAfterCurrentDay(val: Date) {
-        const now = new Date()
-        if(now >= val) {
-                throw Error("date have to be minimum 1 day later than the current date")
+        if(new Date().getOnlyDate().getTime() >= val.getOnlyDate().getTime()) {
+            throw Error("date have to be minimum 1 day later than the current date")
         }
     } 
 
     public static isBeforeTournamentDay(val: Date) {
-        const td = this["datetime"]
-        if(val >= td) {
-                throw Error("date have to be minimum 1 day before the tournament date")
+        if(val.getOnlyDate().getTime() >= this["datetime"].getOnlyDate().getTime()) {
+            throw Error("date have to be minimum 1 day before the tournament date")
         }
     } 
 }

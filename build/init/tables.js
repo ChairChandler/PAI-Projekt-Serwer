@@ -21,7 +21,7 @@ var __importStar = (this && this.__importStar) || function (mod) {
 Object.defineProperty(exports, "__esModule", { value: true });
 const database_1 = __importDefault(require("static/database"));
 const user_1 = __importDefault(require("models/user"));
-const contestant_1 = __importDefault(require("models/contestant"));
+const contestants_1 = __importDefault(require("models/contestants"));
 const tournament_1 = __importDefault(require("models/tournament"));
 const logo_1 = __importDefault(require("models/logo"));
 const db_config = __importStar(require("config/database.json"));
@@ -33,7 +33,7 @@ function init() {
                 yield database_1.default.query('SET FOREIGN_KEY_CHECKS = 0');
             }
             yield user_1.default.sync(conf);
-            yield contestant_1.default.sync(conf);
+            yield contestants_1.default.sync(conf);
             yield logo_1.default.sync(conf);
             yield tournament_1.default.sync(conf);
             if (db_config.force_init) {
