@@ -14,6 +14,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 Object.defineProperty(exports, "__esModule", { value: true });
 const tournament_1 = __importDefault(require("models/tournament"));
 const user_1 = __importDefault(require("models/user"));
+const contestants_1 = __importDefault(require("models/contestants"));
 const logo_1 = __importDefault(require("models/logo"));
 const database_1 = __importDefault(require("static/database"));
 function getTournamentList(body) {
@@ -134,3 +135,41 @@ function modifyTournament(body, id) {
     });
 }
 exports.modifyTournament = modifyTournament;
+function getTournamentsInfoForContestant(id) {
+    return __awaiter(this, void 0, void 0, function* () {
+        try {
+            const response_data = [];
+            const contestant_info = yield contestants_1.default.findAll({ where: { user_id: id } });
+            for (const c of contestant_info) {
+                const info = yield tournament_1.default.findOne({ where: { id: c.tournament_id } });
+                const owner = yield user_1.default.findOne({ where: { id: info.owner_id } });
+                const logos = yield logo_1.default.findAll({ where: { tournament_id: c.tournament_id } });
+                const imgData = [];
+                for (const img of logos) {
+                    imgData.push({
+                        id: img.id,
+                        data: new Uint8ClampedArray(yield img.logo.arrayBuffer())
+                    });
+                }
+                response_data.push({
+                    tournament_name: info.tournament_name,
+                    description: info.description,
+                    organizer: `${owner.name} ${owner.lastname}`,
+                    datetime: info.datetime,
+                    localization_lat: info.localization_lat,
+                    localization_lng: info.localization_lng,
+                    participants_limit: info.participants_limit,
+                    joining_deadline: info.joining_deadline,
+                    current_contestants_amount: info.current_contestants_amount,
+                    logos: imgData
+                });
+            }
+            return response_data;
+        }
+        catch (err) {
+            console.error(err);
+            return err;
+        }
+    });
+}
+exports.getTournamentsInfoForContestant = getTournamentsInfoForContestant;

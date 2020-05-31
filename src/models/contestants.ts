@@ -37,14 +37,12 @@ Contestant.init({
     },
     license_id: {
         type: SQL.STRING,
-        unique: true,
         allowNull: false,
         primaryKey: true,
         validate: {len: [1, 255]}
     },
     ranking_pos: {
         type: SQL.INTEGER.UNSIGNED,
-        unique: true,
         primaryKey: true,
         allowNull: false
     },

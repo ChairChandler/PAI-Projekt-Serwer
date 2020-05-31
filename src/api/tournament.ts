@@ -7,6 +7,21 @@ export namespace TOURNAMENT.LIST.GENERAL.GET {
     export type OUTPUT = {id: number, name: string}[]
 }
 
+export namespace TOURNAMENT.LIST.CONTESTANT.GET {
+    export type OUTPUT = {
+        tournament_name: string
+        description: string | null
+        organizer: string
+        datetime: Date
+        localization_lat: number //latitude
+        localization_lng: number //longitude
+        participants_limit: number | null
+        joining_deadline: Date
+        current_contestants_amount: number
+        logos: {id: number, data: Uint8ClampedArray}[]
+    }[]
+}
+
 // GET TOURNAMENT/INFO
 export namespace TOURNAMENT.INFO.GET {
     export interface INPUT {

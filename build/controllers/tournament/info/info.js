@@ -33,7 +33,7 @@ router.route('/info')
         res.sendStatus(http_status_codes_1.default.NO_CONTENT);
     }
     else {
-        res.sendStatus(http_status_codes_1.default.INTERNAL_SERVER_ERROR);
+        res.status(http_status_codes_1.default.INTERNAL_SERVER_ERROR).send(err.message);
     }
 }))
     .post(token_middleware_1.TokenMiddleware(), (req, res) => __awaiter(void 0, void 0, void 0, function* () {
@@ -42,7 +42,7 @@ router.route('/info')
         res.sendStatus(http_status_codes_1.default.NO_CONTENT);
     }
     else {
-        res.sendStatus(http_status_codes_1.default.INTERNAL_SERVER_ERROR);
+        res.status(http_status_codes_1.default.INTERNAL_SERVER_ERROR).send(err.message);
     }
 }));
 exports.default = router;

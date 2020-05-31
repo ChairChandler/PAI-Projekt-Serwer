@@ -1,5 +1,6 @@
 import Tournament from 'models/tournament'
 import User from 'models/user'
+import Contestants from 'models/contestants'
 import * as API from 'api/tournament'
 import Logo from 'models/logo'
 import db from 'static/database'
@@ -123,6 +124,45 @@ export async function modifyTournament(body: API.TOURNAMENT.INFO.PUT.INPUT, id: 
         await t.commit()
     } catch (err) {
         await t.rollback()
+        console.error(err)
+        return err
+    }
+}
+
+export async function getTournamentsInfoForContestant(id: number): 
+Promise<API.TOURNAMENT.LIST.CONTESTANT.GET.OUTPUT|Error> {
+    try {
+        const response_data = []
+        const contestant_info = await Contestants.findAll({where: {user_id: id}})
+        for(const c of contestant_info) {
+            const info = await Tournament.findOne({where: {id: c.tournament_id}})
+            const owner = await User.findOne({where: {id: info.owner_id}})
+            const logos = await Logo.findAll({where: {tournament_id: c.tournament_id}})
+
+            const imgData = []
+            for(const img of logos) {
+                imgData.push({
+                    id: img.id, 
+                    data: new Uint8ClampedArray(await img.logo.arrayBuffer())
+                })
+            }
+
+            response_data.push({
+                tournament_name: info.tournament_name,
+                description: info.description,
+                organizer: `${owner.name} ${owner.lastname}`,
+                datetime: info.datetime,
+                localization_lat: info.localization_lat, //latitude
+                localization_lng: info.localization_lng, //longitude
+                participants_limit: info.participants_limit,
+                joining_deadline: info.joining_deadline,
+                current_contestants_amount: info.current_contestants_amount,
+                logos: imgData
+            })
+        }
+
+        return response_data
+    } catch(err) {
         console.error(err)
         return err
     }

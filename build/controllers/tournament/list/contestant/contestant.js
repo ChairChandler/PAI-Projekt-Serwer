@@ -13,9 +13,18 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 };
 Object.defineProperty(exports, "__esModule", { value: true });
 const express_1 = __importDefault(require("express"));
+const http_status_codes_1 = __importDefault(require("http-status-codes"));
 const token_middleware_1 = require("middlewares/token-middleware");
+const tournament_1 = require("services/tournament");
 const router = express_1.default.Router();
 router.route('/contestant')
     .get(token_middleware_1.TokenMiddleware(), (req, res) => __awaiter(void 0, void 0, void 0, function* () {
+    let data = yield tournament_1.getTournamentsInfoForContestant(Number.parseInt(req.cookies["id"]));
+    if (!(data instanceof Error)) {
+        res.status(http_status_codes_1.default.OK).send(data);
+    }
+    else {
+        res.status(http_status_codes_1.default.NOT_FOUND).send(data.message);
+    }
 }));
 exports.default = router;

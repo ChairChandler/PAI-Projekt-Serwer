@@ -11,6 +11,13 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
 var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
+var __importStar = (this && this.__importStar) || function (mod) {
+    if (mod && mod.__esModule) return mod;
+    var result = {};
+    if (mod != null) for (var k in mod) if (Object.hasOwnProperty.call(mod, k)) result[k] = mod[k];
+    result["default"] = mod;
+    return result;
+};
 Object.defineProperty(exports, "__esModule", { value: true });
 const express_1 = __importDefault(require("express"));
 const controller_1 = __importDefault(require("controllers/controller"));
@@ -19,6 +26,8 @@ const tables_1 = __importDefault(require("init/tables"));
 const query_params_middleware_1 = require("middlewares/query-params-middleware");
 const access_log_middleware_1 = require("middlewares/access-log-middleware");
 const cookie_parser_1 = __importDefault(require("cookie-parser"));
+const ladder_1 = require("services/ladder");
+const time = __importStar(require("time-convert"));
 require("init/date");
 function main() {
     return __awaiter(this, void 0, void 0, function* () {
@@ -30,6 +39,12 @@ function main() {
         app.use(express_1.default.json());
         app.use(query_params_middleware_1.QueryParamsToJson());
         app.use(controller_1.default);
+        setInterval(() => __awaiter(this, void 0, void 0, function* () {
+            const err = yield ladder_1.shuffleContestants();
+            if (err) {
+                console.error(err);
+            }
+        }), time.d.to(time.ms)(1));
         app.listen(server_json_1.default.port, () => {
             console.log('starting server done');
         });
