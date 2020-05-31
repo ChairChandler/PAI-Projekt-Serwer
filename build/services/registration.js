@@ -30,12 +30,11 @@ function signUp(body) {
                 html: `<a href="${href}">Click to finish registration</a>`
             });
             yield t.commit();
-            return true;
         }
         catch (err) {
             yield t.rollback();
             console.error(err);
-            return false;
+            return err;
         }
     });
 }
@@ -58,12 +57,11 @@ function verify(body) {
             }
             yield data.update({ registered: true }, { transaction: t });
             t.commit();
-            return true;
         }
         catch (err) {
             t.rollback();
             console.error(err);
-            return false;
+            return err;
         }
     });
 }

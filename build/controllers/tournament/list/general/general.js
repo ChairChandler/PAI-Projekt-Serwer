@@ -19,12 +19,12 @@ const router = express_1.default.Router();
 // get tournaments list
 router.route('/general')
     .get((req, res) => __awaiter(void 0, void 0, void 0, function* () {
-    let data;
-    if ((data = yield tournament_1.getTournamentList(req.body))) {
+    let data = yield tournament_1.getTournamentList(req.body);
+    if (!(data instanceof Error)) {
         res.status(http_status_codes_1.default.OK).send(data);
     }
     else {
-        res.status(http_status_codes_1.default.BAD_REQUEST).send();
+        res.status(http_status_codes_1.default.BAD_REQUEST).send(data.message);
     }
 }));
 exports.default = router;

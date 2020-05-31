@@ -19,11 +19,12 @@ const router = express_1.default.Router();
 // change password
 router.route('/reset')
     .post((req, res) => __awaiter(void 0, void 0, void 0, function* () {
-    if (yield logging_1.changePassword(req.body)) {
+    let err = yield logging_1.changePassword(req.body);
+    if (!err) {
         res.sendStatus(http_status_codes_1.default.NO_CONTENT);
     }
     else {
-        res.sendStatus(http_status_codes_1.default.INTERNAL_SERVER_ERROR);
+        res.status(http_status_codes_1.default.INTERNAL_SERVER_ERROR).send(err.message);
     }
 }));
 exports.default = router;

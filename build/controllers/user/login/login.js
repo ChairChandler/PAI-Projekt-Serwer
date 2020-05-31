@@ -19,22 +19,23 @@ const reset_1 = __importDefault(require("./reset/reset"));
 const router = express_1.default.Router();
 router.route('/login')
     .put((req, res) => __awaiter(void 0, void 0, void 0, function* () {
-    const token_info = yield logging_1.signIn(req.body);
-    if (token_info) {
-        res.cookie('id', token_info.user_id, { httpOnly: true });
-        res.cookie('token', token_info.token, { maxAge: token_info.expiresIn * 1000, httpOnly: true });
+    const data = yield logging_1.signIn(req.body);
+    if (!(data instanceof Error)) {
+        res.cookie('id', data.user_id, { httpOnly: true });
+        res.cookie('token', data.token, { maxAge: data.expiresIn * 1000, httpOnly: true });
         res.sendStatus(http_status_codes_1.default.OK);
     }
     else {
-        res.sendStatus(http_status_codes_1.default.INTERNAL_SERVER_ERROR);
+        res.status(http_status_codes_1.default.INTERNAL_SERVER_ERROR).send(data.message);
     }
 }))
     .get((req, res) => __awaiter(void 0, void 0, void 0, function* () {
-    if (yield logging_1.remindPassword(req.body)) {
+    let err = yield logging_1.remindPassword(req.body);
+    if (!err) {
         res.sendStatus(http_status_codes_1.default.NO_CONTENT);
     }
     else {
-        res.sendStatus(http_status_codes_1.default.NOT_FOUND);
+        res.status(http_status_codes_1.default.NOT_FOUND).send(err.message);
     }
 }));
 router.use('/login', reset_1.default);

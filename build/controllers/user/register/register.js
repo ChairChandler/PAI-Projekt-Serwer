@@ -20,11 +20,12 @@ const router = express_1.default.Router();
 // sign up
 router.route('/register')
     .post((req, res) => __awaiter(void 0, void 0, void 0, function* () {
-    if (yield registration_1.signUp(req.body)) {
+    let err = yield registration_1.signUp(req.body);
+    if (!err) {
         res.sendStatus(http_status_codes_1.default.CREATED);
     }
     else {
-        res.sendStatus(http_status_codes_1.default.INTERNAL_SERVER_ERROR);
+        res.status(http_status_codes_1.default.INTERNAL_SERVER_ERROR).send(err.message);
     }
 }));
 router.use('/register', verify_1.default);

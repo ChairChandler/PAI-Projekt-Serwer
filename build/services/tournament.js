@@ -19,18 +19,19 @@ const database_1 = __importDefault(require("static/database"));
 function getTournamentList(body) {
     return __awaiter(this, void 0, void 0, function* () {
         try {
-            let tournaments;
+            let tournaments = yield tournament_1.default.findAll();
             if (body.amount) {
-                tournaments = yield tournament_1.default.findAll({ limit: body.amount });
-            }
-            else {
-                tournaments = yield tournament_1.default.findAll();
+                /*
+                unfortunately cannot use limit prop due to casting non-literal to string (bug)
+                which cause database error
+                */
+                tournaments = tournaments.slice(0, body.amount);
             }
             return tournaments.map(v => ({ "id": v.id, "name": v.tournament_name }));
         }
         catch (err) {
             console.error(err);
-            return null;
+            return err;
         }
     });
 }
@@ -63,7 +64,7 @@ function getTournamentInfo(body) {
         }
         catch (err) {
             console.error(err);
-            return null;
+            return err;
         }
     });
 }
@@ -86,12 +87,11 @@ function createTournament(body, id) {
                 yield logo_1.default.create({ tournament_id: tournament.id, logo });
             }
             yield t.commit();
-            return true;
         }
         catch (err) {
             yield t.rollback();
             console.error(err);
-            return false;
+            return err;
         }
     });
 }
@@ -125,12 +125,11 @@ function modifyTournament(body, id) {
                 }
             }
             yield t.commit();
-            return true;
         }
         catch (err) {
             yield t.rollback();
             console.error(err);
-            return false;
+            return err;
         }
     });
 }

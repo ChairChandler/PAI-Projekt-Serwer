@@ -7,10 +7,11 @@ const router = express.Router()
 // change password
 router.route('/reset')
 .post(async (req: Request, res: Response) => { //ought to be put however form cannot allow to use this method
-    if(await changePassword(req.body)) {
+    let err = await changePassword(req.body)
+    if(!err) {
         res.sendStatus(HttpCode.NO_CONTENT)
     } else {
-        res.sendStatus(HttpCode.INTERNAL_SERVER_ERROR)
+        res.status(HttpCode.INTERNAL_SERVER_ERROR).send(err.message)
     }
 })
 

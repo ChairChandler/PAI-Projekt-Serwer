@@ -5,7 +5,7 @@ import server_config from 'config/server.json'
 import db from 'static/database'
 import * as API from 'api/register'
 
-export async function signUp(body: API.USER.REGISTER.POST.INPUT): Promise<Boolean> {
+export async function signUp(body: API.USER.REGISTER.POST.INPUT): Promise<void|Error> {
     const t = await db.transaction()
 
     try {
@@ -19,15 +19,14 @@ export async function signUp(body: API.USER.REGISTER.POST.INPUT): Promise<Boolea
             html: `<a href="${href}">Click to finish registration</a>`
         })
         await t.commit()
-        return true
     } catch(err) {
         await t.rollback()
         console.error(err)
-        return false
+        return err
     }
 }
 
-export async function verify(body: API.USER.REGISTER.VERIFY.GET.INPUT): Promise<Boolean> {
+export async function verify(body: API.USER.REGISTER.VERIFY.GET.INPUT): Promise<void|Error> {
     const t = await db.transaction()
     try {
         const data = await User.findOne({
@@ -47,10 +46,9 @@ export async function verify(body: API.USER.REGISTER.VERIFY.GET.INPUT): Promise<
 
         await data.update({registered: true}, {transaction: t})
         t.commit()
-        return true
     } catch(err) {
         t.rollback()
         console.error(err)
-        return false
+        return err
     }
 }

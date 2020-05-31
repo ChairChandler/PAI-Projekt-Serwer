@@ -7,18 +7,19 @@ const router = express.Router()
 
 router.route('/contestants')
 .post(TokenMiddleware(), async (req: Request, res: Response) => { // add contestant to the tournament
-    if(await createContestant(req.body, Number.parseInt(req.cookies["id"]))) {
+    let err = await createContestant(req.body, Number.parseInt(req.cookies["id"]))
+    if(!err) {
         res.sendStatus(HttpCode.NO_CONTENT)
     } else {
-        res.sendStatus(HttpCode.INTERNAL_SERVER_ERROR)
+        res.status(HttpCode.INTERNAL_SERVER_ERROR).send(err.message)
     }
 })
 .get(TokenMiddleware(), async (req: Request, res: Response) => { // get tournament contestants list
-    let data
-    if((data = await getContestants(req.body, Number.parseInt(req.cookies["id"])))) {
+    let data = await getContestants(req.body, Number.parseInt(req.cookies["id"]))
+    if(!(data instanceof Error)) {
         res.status(HttpCode.OK).send(data)
     } else {
-        res.sendStatus(HttpCode.UNAUTHORIZED)
+        res.status(HttpCode.UNAUTHORIZED).send(data.message)
     }
 })
 

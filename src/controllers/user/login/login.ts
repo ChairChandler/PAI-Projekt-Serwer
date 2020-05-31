@@ -7,20 +7,21 @@ const router = express.Router()
 
 router.route('/login')
 .put(async (req: Request, res: Response) => { // sign in
-    const token_info = await signIn(req.body)
-    if(token_info) {
-        res.cookie('id', token_info.user_id, {httpOnly: true})
-        res.cookie('token', token_info.token, {maxAge: token_info.expiresIn * 1000, httpOnly: true})
+    const data = await signIn(req.body)
+    if(!(data instanceof Error)) {
+        res.cookie('id', data.user_id, {httpOnly: true})
+        res.cookie('token', data.token, {maxAge: data.expiresIn * 1000, httpOnly: true})
         res.sendStatus(HttpCode.OK)
     } else {
-        res.sendStatus(HttpCode.INTERNAL_SERVER_ERROR)
+        res.status(HttpCode.INTERNAL_SERVER_ERROR).send(data.message)
     }
 })
 .get(async (req: Request, res: Response) => { // forgot password
-    if(await remindPassword(req.body)) {
+    let err = await remindPassword(req.body)
+    if(!err) {
         res.sendStatus(HttpCode.NO_CONTENT)
     } else {
-        res.sendStatus(HttpCode.NOT_FOUND)
+        res.status(HttpCode.NOT_FOUND).send(err.message)
     }
 })
 

@@ -5,23 +5,26 @@ import Logo from 'models/logo'
 import db from 'static/database'
 
 export async function getTournamentList(body: API.TOURNAMENT.LIST.GENERAL.GET.INPUT): 
-Promise<API.TOURNAMENT.LIST.GENERAL.GET.OUTPUT> {
+Promise<API.TOURNAMENT.LIST.GENERAL.GET.OUTPUT|Error> {
     try {
-        let tournaments: Tournament[]
-        if(body.amount) {
-            tournaments = await Tournament.findAll({limit: body.amount})
-        } else {
-            tournaments = await Tournament.findAll()
+        let tournaments = await Tournament.findAll()
+        if(body.amount) { 
+            /* 
+            unfortunately cannot use limit prop due to casting non-literal to string (bug)
+            which cause database error
+            */
+            tournaments = tournaments.slice(0, body.amount)
         }
+
         return tournaments.map(v => ({"id": v.id, "name": v.tournament_name}))
     } catch(err) {
         console.error(err)
-        return null
+        return err
     }
 }
 
 export async function getTournamentInfo(body: API.TOURNAMENT.INFO.GET.INPUT): 
-Promise<API.TOURNAMENT.INFO.GET.OUTPUT> {
+Promise<API.TOURNAMENT.INFO.GET.OUTPUT|Error> {
     try {
         const info = await Tournament.findOne({where: {id: body.tournament_id}})
         const owner = await User.findOne({where: {id: info.owner_id}})
@@ -48,11 +51,11 @@ Promise<API.TOURNAMENT.INFO.GET.OUTPUT> {
         }
     } catch(err) {
         console.error(err)
-        return null
+        return err
     }
 }
 
-export async function createTournament(body: API.TOURNAMENT.INFO.POST.INPUT, id: number): Promise<Boolean> {
+export async function createTournament(body: API.TOURNAMENT.INFO.POST.INPUT, id: number): Promise<void|Error> {
     const t = await db.transaction()
     try {
         const tournament = await Tournament.create({
@@ -71,15 +74,14 @@ export async function createTournament(body: API.TOURNAMENT.INFO.POST.INPUT, id:
         }
 
         await t.commit()
-        return true
     } catch (err) {
         await t.rollback()
         console.error(err)
-        return false
+        return err
     }
 }
 
-export async function modifyTournament(body: API.TOURNAMENT.INFO.PUT.INPUT, id: number): Promise<Boolean> {
+export async function modifyTournament(body: API.TOURNAMENT.INFO.PUT.INPUT, id: number): Promise<void|Error> {
     const t = await db.transaction()
     try {
         const tournament = await Tournament.findOne({where: {id: body.tournament_id}})
@@ -119,10 +121,9 @@ export async function modifyTournament(body: API.TOURNAMENT.INFO.PUT.INPUT, id: 
         }
 
         await t.commit()
-        return true
     } catch (err) {
         await t.rollback()
         console.error(err)
-        return false
+        return err
     }
 }

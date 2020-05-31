@@ -7,7 +7,7 @@ import * as jwt from 'jsonwebtoken'
 import * as Crypto from 'crypto'
 import * as API from 'api/login'
 
-export async function signIn(body: API.USER.LOGIN.PUT.INPUT): Promise<{user_id: number, token: string, expiresIn: number}|null> {
+export async function signIn(body: API.USER.LOGIN.PUT.INPUT): Promise<{user_id: number, token: string, expiresIn: number}|Error> {
     try {
         const user = await User.findOne({
             where: {
@@ -27,11 +27,11 @@ export async function signIn(body: API.USER.LOGIN.PUT.INPUT): Promise<{user_id: 
         return {user_id: user.id, token, expiresIn: server_config.token.expiresIn}
     } catch(err) {
         console.error(err)
-        return null
+        return err
     }
 }
 
-export async function remindPassword(body: API.USER.LOGIN.GET.INPUT): Promise<Boolean> {
+export async function remindPassword(body: API.USER.LOGIN.GET.INPUT): Promise<void|Error> {
     const t = await db.transaction()
     
     try {
@@ -56,15 +56,14 @@ export async function remindPassword(body: API.USER.LOGIN.GET.INPUT): Promise<Bo
             `
         })
         await t.commit()
-        return true
     } catch(err) {
         await t.rollback()
         console.error(err)
-        return false
+        return err
     }
 }
 
-export async function changePassword(body: API.USER.LOGIN.RESET.POST.INPUT): Promise<Boolean> {
+export async function changePassword(body: API.USER.LOGIN.RESET.POST.INPUT): Promise<void|Error> {
     const t = await db.transaction()
     try {
         const user = await User.findOne({where: {email: body.email}})
@@ -75,10 +74,9 @@ export async function changePassword(body: API.USER.LOGIN.RESET.POST.INPUT): Pro
         await user.update({password: body.password, forgot_password: false}, {transaction: t})
         
         t.commit()
-        return true
     } catch(err) {
         t.rollback()
         console.error(err)
-        return false
+        return err
     }
 }

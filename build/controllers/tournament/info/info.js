@@ -19,16 +19,17 @@ const token_middleware_1 = require("middlewares/token-middleware");
 const router = express_1.default.Router();
 router.route('/info')
     .get((req, res) => __awaiter(void 0, void 0, void 0, function* () {
-    let data;
-    if ((data = yield tournament_1.getTournamentInfo(req.body))) {
+    let data = yield tournament_1.getTournamentInfo(req.body);
+    if (!(data instanceof Error)) {
         res.status(http_status_codes_1.default.OK).send(data);
     }
     else {
-        res.sendStatus(http_status_codes_1.default.NOT_FOUND);
+        res.status(http_status_codes_1.default.NOT_FOUND).send(data.message);
     }
 }))
     .put(token_middleware_1.TokenMiddleware(), (req, res) => __awaiter(void 0, void 0, void 0, function* () {
-    if (yield tournament_1.modifyTournament(req.body, Number.parseInt(req.cookies["id"]))) {
+    let err = yield tournament_1.modifyTournament(req.body, Number.parseInt(req.cookies["id"]));
+    if (!err) {
         res.sendStatus(http_status_codes_1.default.NO_CONTENT);
     }
     else {
@@ -36,7 +37,8 @@ router.route('/info')
     }
 }))
     .post(token_middleware_1.TokenMiddleware(), (req, res) => __awaiter(void 0, void 0, void 0, function* () {
-    if (yield tournament_1.createTournament(req.body, Number.parseInt(req.cookies["id"]))) {
+    let err = yield tournament_1.createTournament(req.body, Number.parseInt(req.cookies["id"]));
+    if (!err) {
         res.sendStatus(http_status_codes_1.default.NO_CONTENT);
     }
     else {

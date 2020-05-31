@@ -49,7 +49,7 @@ Tournament.init({
     tournament_name: {
         type: SQL.STRING, 
         allowNull: false,
-        primaryKey: true,
+        unique: true,
         validate: {len: [8, 24]}
     },
     description: {

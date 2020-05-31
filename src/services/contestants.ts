@@ -3,7 +3,7 @@ import Tournament from 'models/tournament'
 import User from 'models/user'
 import * as API from 'api/contestants'
 
-export async function createContestant(body: API.TOURNAMENT.CONTESTANTS.POST.INPUT, id: number): Promise<Boolean> {
+export async function createContestant(body: API.TOURNAMENT.CONTESTANTS.POST.INPUT, id: number): Promise<void|Error> {
     try {
         const now = new Date().getOnlyDate().getTime()
         const tinfo = await Tournament.findOne({where: {id: body.tournament_id}})
@@ -19,15 +19,14 @@ export async function createContestant(body: API.TOURNAMENT.CONTESTANTS.POST.INP
             license_id: body.license_id,
             ranking_pos: body.ranking_pos
         })
-        return true
     } catch(err) {
         console.error(err)
-        return false
+        return err
     }
 }
 
 export async function getContestants(body: API.TOURNAMENT.CONTESTANTS.GET.INPUT, id: number): 
-Promise<API.TOURNAMENT.CONTESTANTS.GET.OUTPUT|null> {
+Promise<API.TOURNAMENT.CONTESTANTS.GET.OUTPUT|Error> {
     try {
         const tournament = await Tournament.findOne({where: {owner_id: id, id: body.tournament_id}})
         if(!tournament) {
@@ -44,6 +43,6 @@ Promise<API.TOURNAMENT.CONTESTANTS.GET.OUTPUT|null> {
         return data
     } catch(err) {
         console.error(err)
-        return null
+        return err
     }
 }

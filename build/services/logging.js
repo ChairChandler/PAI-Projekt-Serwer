@@ -47,7 +47,7 @@ function signIn(body) {
         }
         catch (err) {
             console.error(err);
-            return null;
+            return err;
         }
     });
 }
@@ -75,12 +75,11 @@ function remindPassword(body) {
             `
             });
             yield t.commit();
-            return true;
         }
         catch (err) {
             yield t.rollback();
             console.error(err);
-            return false;
+            return err;
         }
     });
 }
@@ -95,12 +94,11 @@ function changePassword(body) {
             }
             yield user.update({ password: body.password, forgot_password: false }, { transaction: t });
             t.commit();
-            return true;
         }
         catch (err) {
             t.rollback();
             console.error(err);
-            return false;
+            return err;
         }
     });
 }

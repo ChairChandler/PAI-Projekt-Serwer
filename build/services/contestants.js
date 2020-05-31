@@ -32,11 +32,10 @@ function createContestant(body, id) {
                 license_id: body.license_id,
                 ranking_pos: body.ranking_pos
             });
-            return true;
         }
         catch (err) {
             console.error(err);
-            return false;
+            return err;
         }
     });
 }
@@ -58,7 +57,7 @@ function getContestants(body, id) {
         }
         catch (err) {
             console.error(err);
-            return null;
+            return err;
         }
     });
 }
