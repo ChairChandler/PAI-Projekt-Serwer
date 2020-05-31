@@ -26,7 +26,7 @@ function getTournamentList(body) {
             else {
                 tournaments = yield tournament_1.default.findAll();
             }
-            return tournaments.map(v => Object({ "id": v.id, "name": v.tournament_name }));
+            return tournaments.map(v => ({ "id": v.id, "name": v.tournament_name }));
         }
         catch (err) {
             console.error(err);
@@ -42,7 +42,7 @@ function getTournamentInfo(body) {
             const owner = yield user_1.default.findOne({ where: { id: info.owner_id } });
             const logos = yield logo_1.default.findAll({ where: { tournament_id: body.tournament_id } });
             const imgData = [];
-            for (let img of logos) {
+            for (const img of logos) {
                 imgData.push({
                     id: img.id,
                     data: new Uint8ClampedArray(yield img.logo.arrayBuffer())
@@ -81,12 +81,9 @@ function createTournament(body, id) {
                 localization_lng: body.localization_lng,
                 participants_limit: body.participants_limit,
                 joining_deadline: body.joining_deadline
-            });
+            }, { transaction: t });
             for (const logo of body.logos) {
-                yield logo_1.default.create({
-                    tournament_id: tournament.id,
-                    logo: logo
-                });
+                yield logo_1.default.create({ tournament_id: tournament.id, logo });
             }
             yield t.commit();
             return true;
@@ -103,40 +100,27 @@ function modifyTournament(body, id) {
     return __awaiter(this, void 0, void 0, function* () {
         const t = yield database_1.default.transaction();
         try {
-            const update_body = {};
-            if ('tournament_name' in body) {
-                update_body['tournament_name'] = body.tournament_name;
-            }
-            if ('description' in body) {
-                update_body['description'] = body.description;
-            }
-            if ('datetime' in body) {
-                update_body['datetime'] = body.datetime;
-            }
-            if ('localization_lat' in body) {
-                update_body['localization_lat'] = body.localization_lat;
-            }
-            if ('localization_lng' in body) {
-                update_body['localization_lng'] = body.localization_lng;
-            }
-            if ('participants_limit' in body) {
-                update_body['participants_limit'] = body.participants_limit;
-            }
-            if ('joining_deadline' in body) {
-                update_body['joining_deadline'] = body.joining_deadline;
-            }
             const tournament = yield tournament_1.default.findOne({ where: { id: body.tournament_id } });
             if (tournament.owner_id != id) {
                 throw Error('unauthorized access to modify protected data');
             }
-            yield tournament.update(update_body);
-            if ('logos' in body) {
+            const { tournament_name = tournament.tournament_name, description = tournament.description, datetime = tournament.datetime, localization_lat = tournament.localization_lat, localization_lng = tournament.localization_lng, participants_limit = tournament.participants_limit, joining_deadline = tournament.joining_deadline, } = body;
+            yield tournament.update({
+                tournament_name,
+                description,
+                datetime,
+                localization_lat,
+                localization_lng,
+                participants_limit,
+                joining_deadline
+            }, { transaction: t });
+            if (body.logos) {
                 for (const l of body.logos) {
                     if (l.id) {
-                        yield logo_1.default.update({ logo: l.data }, { where: { id: l.id } });
+                        yield logo_1.default.update({ logo: l.data }, { where: { id: l.id }, transaction: t });
                     }
                     else {
-                        yield logo_1.default.create({ tournament_id: body.tournament_id, logo: l.data });
+                        yield logo_1.default.create({ tournament_id: body.tournament_id, logo: l.data }, { transaction: t });
                     }
                 }
             }

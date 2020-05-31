@@ -43,7 +43,7 @@ function signIn(body) {
             }
             const id = Crypto.randomBytes(64).toString('hex');
             const token = jwt.sign({ id: id }, server_json_1.default.token.secret, { expiresIn: server_json_1.default.token.expiresIn }); // 24 hours
-            return { user_id: user.id, token: token, expiresIn: server_json_1.default.token.expiresIn };
+            return { user_id: user.id, token, expiresIn: server_json_1.default.token.expiresIn };
         }
         catch (err) {
             console.error(err);
@@ -60,7 +60,7 @@ function remindPassword(body) {
             if (!user) {
                 throw Error("invalid email");
             }
-            yield user.update({ forgot_password: true });
+            yield user.update({ forgot_password: true }, { transaction: t });
             yield smtp_1.default.sendMail({
                 from: smtp_json_1.default.from,
                 to: body.email,
@@ -87,15 +87,18 @@ function remindPassword(body) {
 exports.remindPassword = remindPassword;
 function changePassword(body) {
     return __awaiter(this, void 0, void 0, function* () {
+        const t = yield database_1.default.transaction();
         try {
             const user = yield user_1.default.findOne({ where: { email: body.email } });
             if (!user.forgot_password) {
                 throw Error("user hasn't requested a password change");
             }
-            yield user.update({ password: body.password, forgot_password: false });
+            yield user.update({ password: body.password, forgot_password: false }, { transaction: t });
+            t.commit();
             return true;
         }
         catch (err) {
+            t.rollback();
             console.error(err);
             return false;
         }

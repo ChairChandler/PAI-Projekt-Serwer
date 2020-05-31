@@ -24,7 +24,7 @@ export async function signIn(body: API.USER.LOGIN.PUT.INPUT): Promise<{user_id: 
         
         const id =  Crypto.randomBytes(64).toString('hex')
         const token = jwt.sign({id: id}, server_config.token.secret, {expiresIn: server_config.token.expiresIn}) // 24 hours
-        return {user_id: user.id, token: token, expiresIn: server_config.token.expiresIn}
+        return {user_id: user.id, token, expiresIn: server_config.token.expiresIn}
     } catch(err) {
         console.error(err)
         return null
@@ -40,7 +40,7 @@ export async function remindPassword(body: API.USER.LOGIN.GET.INPUT): Promise<Bo
             throw Error("invalid email")
         }
 
-        await user.update({forgot_password: true})
+        await user.update({forgot_password: true}, {transaction: t})
 
         await SMTP.sendMail({
             from: smtp_config.from,
@@ -65,16 +65,19 @@ export async function remindPassword(body: API.USER.LOGIN.GET.INPUT): Promise<Bo
 }
 
 export async function changePassword(body: API.USER.LOGIN.RESET.POST.INPUT): Promise<Boolean> {
+    const t = await db.transaction()
     try {
         const user = await User.findOne({where: {email: body.email}})
         if(!user.forgot_password) {
             throw Error("user hasn't requested a password change")
         }
 
-        await user.update({password: body.password, forgot_password: false})
+        await user.update({password: body.password, forgot_password: false}, {transaction: t})
         
+        t.commit()
         return true
     } catch(err) {
+        t.rollback()
         console.error(err)
         return false
     }

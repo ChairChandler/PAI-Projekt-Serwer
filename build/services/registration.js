@@ -42,6 +42,7 @@ function signUp(body) {
 exports.signUp = signUp;
 function verify(body) {
     return __awaiter(this, void 0, void 0, function* () {
+        const t = yield database_1.default.transaction();
         try {
             const data = yield user_1.default.findOne({
                 where: {
@@ -55,10 +56,12 @@ function verify(body) {
             if (data.registered) {
                 throw Error("user has been registered before");
             }
-            yield data.update({ registered: true });
+            yield data.update({ registered: true }, { transaction: t });
+            t.commit();
             return true;
         }
         catch (err) {
+            t.rollback();
             console.error(err);
             return false;
         }

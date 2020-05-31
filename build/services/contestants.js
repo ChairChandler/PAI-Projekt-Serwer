@@ -52,7 +52,7 @@ function getContestants(body, id) {
             let data = [];
             for (const c of contestants) {
                 const { name, lastname } = yield user_1.default.findOne({ where: { id: c.user_id } });
-                data.push({ user_id: c.user_id, name: name, lastname: lastname });
+                data.push({ user_id: c.user_id, name, lastname });
             }
             return data;
         }

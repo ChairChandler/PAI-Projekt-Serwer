@@ -38,7 +38,7 @@ Promise<API.TOURNAMENT.CONTESTANTS.GET.OUTPUT|null> {
         let data = []
         for(const c of contestants) {
             const {name, lastname} = await User.findOne({where: {id: c.user_id}})
-            data.push({user_id: c.user_id, name: name, lastname: lastname})
+            data.push({user_id: c.user_id, name, lastname})
         }
         
         return data

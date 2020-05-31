@@ -28,6 +28,7 @@ export async function signUp(body: API.USER.REGISTER.POST.INPUT): Promise<Boolea
 }
 
 export async function verify(body: API.USER.REGISTER.VERIFY.GET.INPUT): Promise<Boolean> {
+    const t = await db.transaction()
     try {
         const data = await User.findOne({
             where: {
@@ -44,9 +45,11 @@ export async function verify(body: API.USER.REGISTER.VERIFY.GET.INPUT): Promise<
             throw Error("user has been registered before")
         }
 
-        await data.update({registered: true})
+        await data.update({registered: true}, {transaction: t})
+        t.commit()
         return true
     } catch(err) {
+        t.rollback()
         console.error(err)
         return false
     }
