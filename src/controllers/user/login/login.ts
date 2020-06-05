@@ -1,7 +1,7 @@
 import express, { Request, Response} from 'express'
 import HttpCode from 'http-status-codes'
 import { signIn, remindPassword } from 'services/logging'
-import  { TokenMiddleware } from 'middlewares/token-middleware'
+import { TokenMiddleware } from 'middlewares/token-middleware'
 import resetRoute from './reset/reset'
 import MyError from 'misc/my-error'
 
@@ -11,8 +11,10 @@ router.route('/login')
 .post(async (req: Request, res: Response) => { // sign in
     const data = await signIn(req.body)
     if(!(data instanceof Error)) {
-        res.cookie('id', data.user_id, {httpOnly: true})
-        res.cookie('token', data.token, {maxAge: data.expiresIn * 1000, httpOnly: true})
+    	const maxAge = data.expiresIn * 1000
+        res.cookie('id', data.user_id, {maxAge, httpOnly: true})
+        res.cookie('token', data.token, {maxAge, httpOnly: true})
+        res.cookie('token-max-age', maxAge, {maxAge, httpOnly: true})
         res.sendStatus(HttpCode.OK)
     } else {
         res.status(HttpCode.INTERNAL_SERVER_ERROR).send(data instanceof MyError ? data.message : 'cannot sign in')
@@ -27,7 +29,7 @@ router.route('/login')
     }
 })
 .delete(TokenMiddleware(), async (req: Request, res: Response) => { // logout
-    res.cookie('id', '', {maxAge: 0}).cookie('token', '', {maxAge: 0})
+    res.cookie('id', '', {maxAge: 0}).cookie('token', '', {maxAge: 0}).cookie('token-max-age', '', {maxAge: 0})
     res.sendStatus(HttpCode.NO_CONTENT)
 })
 
