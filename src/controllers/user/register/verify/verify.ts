@@ -10,7 +10,7 @@ router.route('/verify')
 .get(async (req: Request, res: Response) => {
     let err = await verify(req.body)
     if(!err) {
-        res.status(HttpCode.PERMANENT_REDIRECT).redirect(`http://${clientInfo.ip}:${clientInfo.port}/`)
+        res.status(HttpCode.PERMANENT_REDIRECT).redirect(`http://${clientInfo.ip}:${clientInfo.port}#login`)
     } else {
         res.status(HttpCode.INTERNAL_SERVER_ERROR).send(err instanceof MyError ? err.message : 'cannot verify email')
     }

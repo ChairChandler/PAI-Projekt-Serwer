@@ -4,9 +4,10 @@ export namespace TOURNAMENT.LIST.GENERAL.GET {
         amount: number | null
     }
 
-    export type OUTPUT = {id: number, name: string}[]
+    export type OUTPUT = {id: number, name: string, date: Date}[]
 }
 
+//GET TOURNAMENT/LIST/CONTESTANT
 export namespace TOURNAMENT.LIST.CONTESTANT.GET {
     export type OUTPUT = {
         tournament_name: string

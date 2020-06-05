@@ -21,15 +21,15 @@ const my_error_1 = __importDefault(require("misc/my-error"));
 function getTournamentList(body) {
     return __awaiter(this, void 0, void 0, function* () {
         try {
-            let tournaments = yield tournament_1.default.findAll({ order: '"datetime"' });
+            let tournaments = yield tournament_1.default.findAll({ order: [['datetime', 'ASC']] });
             if (body.amount) {
                 /*
                 unfortunately cannot use limit prop due to casting non-literal to string (bug)
-                which cause database error
+                which raise database error
                 */
                 tournaments = tournaments.slice(0, body.amount);
             }
-            return tournaments.map(v => ({ "id": v.id, "name": v.tournament_name }));
+            return tournaments.map(v => ({ id: v.id, name: v.tournament_name, date: v.datetime }));
         }
         catch (err) {
             console.error(err);

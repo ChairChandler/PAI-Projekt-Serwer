@@ -9,16 +9,16 @@ import MyError from 'misc/my-error'
 export async function getTournamentList(body: API.TOURNAMENT.LIST.GENERAL.GET.INPUT): 
 Promise<API.TOURNAMENT.LIST.GENERAL.GET.OUTPUT|Error> {
     try {
-        let tournaments = await Tournament.findAll({order: '"datetime"'})
+        let tournaments = await Tournament.findAll({order: [['datetime', 'ASC']]})
         if(body.amount) { 
             /* 
             unfortunately cannot use limit prop due to casting non-literal to string (bug)
-            which cause database error
+            which raise database error
             */
             tournaments = tournaments.slice(0, body.amount)
         }
 
-        return tournaments.map(v => ({"id": v.id, "name": v.tournament_name}))
+        return tournaments.map(v => ({id: v.id, name: v.tournament_name, date: v.datetime}))
     } catch(err) {
         console.error(err)
         return err
