@@ -29,10 +29,12 @@ const cookie_parser_1 = __importDefault(require("cookie-parser"));
 const ladder_1 = require("services/ladder");
 const time = __importStar(require("time-convert"));
 require("init/date");
+const cors_1 = __importDefault(require("cors"));
 function main() {
     return __awaiter(this, void 0, void 0, function* () {
         yield tables_1.default();
         const app = express_1.default();
+        app.use(cors_1.default());
         app.use(access_log_middleware_1.AccessLog());
         app.use(cookie_parser_1.default());
         app.use(express_1.default.urlencoded({ extended: true }));

@@ -15,6 +15,7 @@ Object.defineProperty(exports, "__esModule", { value: true });
 const express_1 = __importDefault(require("express"));
 const http_status_codes_1 = __importDefault(require("http-status-codes"));
 const logging_1 = require("services/logging");
+const my_error_1 = __importDefault(require("misc/my-error"));
 const router = express_1.default.Router();
 // change password
 router.route('/reset')
@@ -24,7 +25,7 @@ router.route('/reset')
         res.sendStatus(http_status_codes_1.default.NO_CONTENT);
     }
     else {
-        res.status(http_status_codes_1.default.INTERNAL_SERVER_ERROR).send(err.message);
+        res.status(http_status_codes_1.default.INTERNAL_SERVER_ERROR).send(err instanceof my_error_1.default ? err.message : 'cannot change password');
     }
 }));
 exports.default = router;

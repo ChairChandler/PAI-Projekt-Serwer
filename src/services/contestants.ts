@@ -2,15 +2,16 @@ import Contestants from 'models/contestants'
 import Tournament from 'models/tournament'
 import User from 'models/user'
 import * as API from 'api/contestants'
+import MyError from 'misc/my-error'
 
 export async function createContestant(body: API.TOURNAMENT.CONTESTANTS.POST.INPUT, id: number): Promise<void|Error> {
     try {
         const now = new Date().getOnlyDate().getTime()
         const tinfo = await Tournament.findOne({where: {id: body.tournament_id}})
         if(tinfo.current_contestants_amount == tinfo.participants_limit) {
-            throw Error('reached maximum participants limit')
+            throw new MyError('reached maximum participants limit')
         } else if(now >= tinfo.datetime.getOnlyDate().getTime() || now >= tinfo.joining_deadline.getOnlyDate().getTime()) {
-            throw Error('exceeded joining deadline')
+            throw new MyError('exceeded joining deadline')
         }
 
         await Contestants.create({
@@ -30,7 +31,7 @@ Promise<API.TOURNAMENT.CONTESTANTS.GET.OUTPUT|Error> {
     try {
         const tournament = await Tournament.findOne({where: {owner_id: id, id: body.tournament_id}})
         if(!tournament) {
-            throw Error('unauthorized access to tournament')
+            throw new MyError('unauthorized access to tournament')
         }
 
         const contestants = await Contestants.findAll({where: {tournament_id: body.tournament_id}})

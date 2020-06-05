@@ -16,16 +16,16 @@ const express_1 = __importDefault(require("express"));
 const client_json_1 = __importDefault(require("config/client.json"));
 const http_status_codes_1 = __importDefault(require("http-status-codes"));
 const registration_1 = require("services/registration");
+const my_error_1 = __importDefault(require("misc/my-error"));
 const router = express_1.default.Router();
-// sign up
 router.route('/verify')
     .get((req, res) => __awaiter(void 0, void 0, void 0, function* () {
     let err = yield registration_1.verify(req.body);
     if (!err) {
-        res.status(http_status_codes_1.default.PERMANENT_REDIRECT).redirect(`http://${client_json_1.default.ip}:${client_json_1.default.port}/${client_json_1.default.endpoints.login}`);
+        res.status(http_status_codes_1.default.PERMANENT_REDIRECT).redirect(`http://${client_json_1.default.ip}:${client_json_1.default.port}/`);
     }
     else {
-        res.status(http_status_codes_1.default.INTERNAL_SERVER_ERROR).send(err.message);
+        res.status(http_status_codes_1.default.INTERNAL_SERVER_ERROR).send(err instanceof my_error_1.default ? err.message : 'cannot verify email');
     }
 }));
 exports.default = router;

@@ -4,6 +4,7 @@ import User from 'models/user'
 import server_config from 'config/server.json'
 import db from 'static/database'
 import * as API from 'api/register'
+import MyError from 'misc/my-error'
 
 export async function signUp(body: API.USER.REGISTER.POST.INPUT): Promise<void|Error> {
     const t = await db.transaction()
@@ -37,11 +38,11 @@ export async function verify(body: API.USER.REGISTER.VERIFY.GET.INPUT): Promise<
         })
 
         if(!data) {
-            throw Error("user not found")
+            throw new MyError("user not found")
         }
 
         if(data.registered) {
-            throw Error("user has been registered before")
+            throw new MyError("user has been registered before")
         }
 
         await data.update({registered: true}, {transaction: t})

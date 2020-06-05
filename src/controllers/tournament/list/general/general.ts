@@ -1,6 +1,7 @@
 import express, { Request, Response} from 'express'
 import HttpCode from 'http-status-codes'
 import { getTournamentList } from 'services/tournament'
+import MyError from 'misc/my-error'
 
 const router = express.Router()
 
@@ -11,7 +12,7 @@ router.route('/general')
     if(!(data instanceof Error)) {
         res.status(HttpCode.OK).send(data)
     } else {
-        res.status(HttpCode.BAD_REQUEST).send(data.message)
+        res.status(HttpCode.BAD_REQUEST).send(data instanceof MyError ? data.message : 'cannot retrieve tournaments list')
     }
 })
 

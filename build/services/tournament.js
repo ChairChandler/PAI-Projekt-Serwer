@@ -17,10 +17,11 @@ const user_1 = __importDefault(require("models/user"));
 const contestants_1 = __importDefault(require("models/contestants"));
 const logo_1 = __importDefault(require("models/logo"));
 const database_1 = __importDefault(require("static/database"));
+const my_error_1 = __importDefault(require("misc/my-error"));
 function getTournamentList(body) {
     return __awaiter(this, void 0, void 0, function* () {
         try {
-            let tournaments = yield tournament_1.default.findAll();
+            let tournaments = yield tournament_1.default.findAll({ order: '"datetime"' });
             if (body.amount) {
                 /*
                 unfortunately cannot use limit prop due to casting non-literal to string (bug)
@@ -103,7 +104,7 @@ function modifyTournament(body, id) {
         try {
             const tournament = yield tournament_1.default.findOne({ where: { id: body.tournament_id } });
             if (tournament.owner_id != id) {
-                throw Error('unauthorized access to modify protected data');
+                throw new my_error_1.default('unauthorized access to modify protected data');
             }
             const { tournament_name = tournament.tournament_name, description = tournament.description, datetime = tournament.datetime, localization_lat = tournament.localization_lat, localization_lng = tournament.localization_lng, participants_limit = tournament.participants_limit, joining_deadline = tournament.joining_deadline, } = body;
             yield tournament.update({

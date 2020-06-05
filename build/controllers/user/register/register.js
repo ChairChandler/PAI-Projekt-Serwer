@@ -16,6 +16,7 @@ const express_1 = __importDefault(require("express"));
 const verify_1 = __importDefault(require("./verify/verify"));
 const http_status_codes_1 = __importDefault(require("http-status-codes"));
 const registration_1 = require("services/registration");
+const my_error_1 = __importDefault(require("misc/my-error"));
 const router = express_1.default.Router();
 // sign up
 router.route('/register')
@@ -25,7 +26,7 @@ router.route('/register')
         res.sendStatus(http_status_codes_1.default.CREATED);
     }
     else {
-        res.status(http_status_codes_1.default.INTERNAL_SERVER_ERROR).send(err.message);
+        res.status(http_status_codes_1.default.INTERNAL_SERVER_ERROR).send(err instanceof my_error_1.default ? err.message : 'cannot sign up');
     }
 }));
 router.use('/register', verify_1.default);

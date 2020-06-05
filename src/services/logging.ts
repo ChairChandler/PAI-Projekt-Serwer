@@ -6,8 +6,9 @@ import db from 'static/database'
 import * as jwt from 'jsonwebtoken'
 import * as Crypto from 'crypto'
 import * as API from 'api/login'
+import MyError from 'misc/my-error'
 
-export async function signIn(body: API.USER.LOGIN.PUT.INPUT): Promise<{user_id: number, token: string, expiresIn: number}|Error> {
+export async function signIn(body: API.USER.LOGIN.POST.INPUT): Promise<{user_id: number, token: string, expiresIn: number}|Error> {
     try {
         const user = await User.findOne({
             where: {
@@ -17,9 +18,9 @@ export async function signIn(body: API.USER.LOGIN.PUT.INPUT): Promise<{user_id: 
         })
 
         if(!user) {
-            throw Error("user not found")
+            throw new MyError("user not found")
         } else if(!user.registered) {
-            throw Error("user hasn't finished registration")
+            throw new MyError("user hasn't finished registration")
         }
         
         const id =  Crypto.randomBytes(64).toString('hex')
@@ -37,7 +38,7 @@ export async function remindPassword(body: API.USER.LOGIN.GET.INPUT): Promise<vo
     try {
         let user = await User.findOne({where: {email: body.email}})
         if(!user) {
-            throw Error("invalid email")
+            throw new MyError("invalid email")
         }
 
         await user.update({forgot_password: true}, {transaction: t})
@@ -68,7 +69,7 @@ export async function changePassword(body: API.USER.LOGIN.RESET.POST.INPUT): Pro
     try {
         const user = await User.findOne({where: {email: body.email}})
         if(!user.forgot_password) {
-            throw Error("user hasn't requested a password change")
+            throw new MyError("user hasn't requested a password change")
         }
 
         await user.update({password: body.password, forgot_password: false}, {transaction: t})

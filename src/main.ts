@@ -8,11 +8,13 @@ import cookieparser from 'cookie-parser'
 import { shuffleContestants } from 'services/ladder'
 import * as time from 'time-convert'
 import 'init/date'
+import cors from 'cors'
 
 async function main() {
     await models_init()
     const app: express.Application = express()
 
+    app.use(cors())
     app.use(AccessLog())
     app.use(cookieparser())
     app.use(express.urlencoded({extended: true}))

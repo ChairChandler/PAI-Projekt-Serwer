@@ -4,11 +4,12 @@ import Contestants from 'models/contestants'
 import * as API from 'api/tournament'
 import Logo from 'models/logo'
 import db from 'static/database'
+import MyError from 'misc/my-error'
 
 export async function getTournamentList(body: API.TOURNAMENT.LIST.GENERAL.GET.INPUT): 
 Promise<API.TOURNAMENT.LIST.GENERAL.GET.OUTPUT|Error> {
     try {
-        let tournaments = await Tournament.findAll()
+        let tournaments = await Tournament.findAll({order: '"datetime"'})
         if(body.amount) { 
             /* 
             unfortunately cannot use limit prop due to casting non-literal to string (bug)
@@ -87,7 +88,7 @@ export async function modifyTournament(body: API.TOURNAMENT.INFO.PUT.INPUT, id: 
     try {
         const tournament = await Tournament.findOne({where: {id: body.tournament_id}})
         if(tournament.owner_id != id) {
-            throw Error('unauthorized access to modify protected data')
+            throw new MyError('unauthorized access to modify protected data')
         }
 
         const {

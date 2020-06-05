@@ -26,6 +26,7 @@ const server_json_1 = __importDefault(require("config/server.json"));
 const database_1 = __importDefault(require("static/database"));
 const jwt = __importStar(require("jsonwebtoken"));
 const Crypto = __importStar(require("crypto"));
+const my_error_1 = __importDefault(require("misc/my-error"));
 function signIn(body) {
     return __awaiter(this, void 0, void 0, function* () {
         try {
@@ -36,10 +37,10 @@ function signIn(body) {
                 }
             });
             if (!user) {
-                throw Error("user not found");
+                throw new my_error_1.default("user not found");
             }
             else if (!user.registered) {
-                throw Error("user hasn't finished registration");
+                throw new my_error_1.default("user hasn't finished registration");
             }
             const id = Crypto.randomBytes(64).toString('hex');
             const token = jwt.sign({ id: id }, server_json_1.default.token.secret, { expiresIn: server_json_1.default.token.expiresIn }); // 24 hours
@@ -58,7 +59,7 @@ function remindPassword(body) {
         try {
             let user = yield user_1.default.findOne({ where: { email: body.email } });
             if (!user) {
-                throw Error("invalid email");
+                throw new my_error_1.default("invalid email");
             }
             yield user.update({ forgot_password: true }, { transaction: t });
             yield smtp_1.default.sendMail({
@@ -90,7 +91,7 @@ function changePassword(body) {
         try {
             const user = yield user_1.default.findOne({ where: { email: body.email } });
             if (!user.forgot_password) {
-                throw Error("user hasn't requested a password change");
+                throw new my_error_1.default("user hasn't requested a password change");
             }
             yield user.update({ password: body.password, forgot_password: false }, { transaction: t });
             t.commit();

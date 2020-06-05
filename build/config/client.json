@@ -1,7 +1,4 @@
 {
     "ip": "localhost",
-    "port": "4000",
-    "endpoints": {
-        "login": "login"
-    }
+    "port": 3000
 }

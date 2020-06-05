@@ -1,10 +1,13 @@
-// PUT USER/LOGIN
-export namespace USER.LOGIN.PUT {
+// POST USER/LOGIN
+export namespace USER.LOGIN.POST {
     export interface INPUT {
         email: string
         password: string
     }
 }
+
+// DELETE USER/LOGIN
+// EMPTY BODY
 
 // GET USER/LOGIN
 export namespace USER.LOGIN.GET {
