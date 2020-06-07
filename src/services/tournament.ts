@@ -35,7 +35,7 @@ Promise<API.TOURNAMENT.INFO.GET.OUTPUT|Error> {
         for(const img of logos) {
             imgData.push({
                 id: img.id, 
-                data: new Uint8ClampedArray(await img.logo.arrayBuffer())
+                data: img.logo
             })
         }
 
@@ -144,7 +144,7 @@ Promise<API.TOURNAMENT.LIST.CONTESTANT.GET.OUTPUT|Error> {
             for(const img of logos) {
                 imgData.push({
                     id: img.id, 
-                    data: new Uint8ClampedArray(await img.logo.arrayBuffer())
+                    data: img.logo
                 })
             }
 

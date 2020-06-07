@@ -19,7 +19,7 @@ export namespace TOURNAMENT.LIST.CONTESTANT.GET {
         participants_limit: number | null
         joining_deadline: Date
         current_contestants_amount: number
-        logos: {id: number, data: Uint8ClampedArray}[]
+        logos: {id: number, data: Blob}[]
     }[]
 }
 
@@ -39,7 +39,7 @@ export namespace TOURNAMENT.INFO.GET {
         participants_limit: number | null
         joining_deadline: Date
         current_contestants_amount: number
-        logos: {id: number, data: Uint8ClampedArray}[]
+        logos: {id: number, data: Blob}[]
     }
 }
 
@@ -53,7 +53,7 @@ export namespace TOURNAMENT.INFO.POST {
         localization_lng: number //longitude
         participants_limit: number | null
         joining_deadline: Date
-        logos: {id: number, data: Uint8ClampedArray}[]
+        logos: {id: number, data: Blob}[]
     }
 }
 
@@ -68,6 +68,6 @@ export namespace TOURNAMENT.INFO.PUT {
         localization_lng: number | undefined //longitude
         participants_limit: number | undefined
         joining_deadline: Date | undefined
-        logos: {id: number | undefined, data: Uint8ClampedArray}[] | undefined
+        logos: {id: number | undefined, data: Blob}[] | undefined
     }
 }

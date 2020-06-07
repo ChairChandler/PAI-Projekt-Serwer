@@ -22,7 +22,7 @@ router.route('/verify')
     .get((req, res) => __awaiter(void 0, void 0, void 0, function* () {
     let err = yield registration_1.verify(req.body);
     if (!err) {
-        res.status(http_status_codes_1.default.PERMANENT_REDIRECT).redirect(`http://${client_json_1.default.ip}:${client_json_1.default.port}/`);
+        res.status(http_status_codes_1.default.PERMANENT_REDIRECT).redirect(`http://${client_json_1.default.ip}:${client_json_1.default.port}/main#login`);
     }
     else {
         res.status(http_status_codes_1.default.INTERNAL_SERVER_ERROR).send(err instanceof my_error_1.default ? err.message : 'cannot verify email');

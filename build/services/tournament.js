@@ -48,7 +48,7 @@ function getTournamentInfo(body) {
             for (const img of logos) {
                 imgData.push({
                     id: img.id,
-                    data: new Uint8ClampedArray(yield img.logo.arrayBuffer())
+                    data: img.logo
                 });
             }
             return {
@@ -149,7 +149,7 @@ function getTournamentsInfoForContestant(id) {
                 for (const img of logos) {
                     imgData.push({
                         id: img.id,
-                        data: new Uint8ClampedArray(yield img.logo.arrayBuffer())
+                        data: img.logo
                     });
                 }
                 response_data.push({
