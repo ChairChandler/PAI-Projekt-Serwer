@@ -26,7 +26,7 @@ router.route('/login')
         const maxAge = data.expiresIn * 1000;
         res.cookie('id', data.user_id, { maxAge, httpOnly: true });
         res.cookie('token', data.token, { maxAge, httpOnly: true });
-        res.cookie('token-max-age', maxAge, { maxAge, httpOnly: true });
+        res.cookie('token-max-age', maxAge, { maxAge, httpOnly: false });
         res.sendStatus(http_status_codes_1.default.OK);
     }
     else {

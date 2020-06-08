@@ -14,7 +14,7 @@ router.route('/login')
     	const maxAge = data.expiresIn * 1000
         res.cookie('id', data.user_id, {maxAge, httpOnly: true})
         res.cookie('token', data.token, {maxAge, httpOnly: true})
-        res.cookie('token-max-age', maxAge, {maxAge, httpOnly: true})
+        res.cookie('token-max-age', maxAge, {maxAge, httpOnly: false})
         res.sendStatus(HttpCode.OK)
     } else {
         res.status(HttpCode.INTERNAL_SERVER_ERROR).send(data instanceof MyError ? data.message : 'cannot sign in')
