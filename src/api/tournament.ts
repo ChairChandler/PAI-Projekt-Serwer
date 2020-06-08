@@ -30,6 +30,8 @@ export namespace TOURNAMENT.INFO.GET {
     }
 
     export interface OUTPUT {
+        tournament_id: number
+        owner_id: number
         tournament_name: string
         description: string | null
         organizer: string

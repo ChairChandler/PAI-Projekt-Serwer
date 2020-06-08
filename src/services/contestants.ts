@@ -2,47 +2,61 @@ import Contestants from 'models/contestants'
 import Tournament from 'models/tournament'
 import User from 'models/user'
 import * as API from 'api/contestants'
+import db from 'static/database'
 import MyError from 'misc/my-error'
 
-export async function createContestant(body: API.TOURNAMENT.CONTESTANTS.POST.INPUT, id: number): Promise<void|Error> {
+export async function createContestant(body: API.TOURNAMENT.CONTESTANTS.POST.INPUT, id: number): Promise<void | Error> {
+    const t = await db.transaction()
+
     try {
         const now = new Date().getOnlyDate().getTime()
-        const tinfo = await Tournament.findOne({where: {id: body.tournament_id}})
-        if(tinfo.current_contestants_amount == tinfo.participants_limit) {
+        const tinfo = await Tournament.findOne({ where: { id: body.tournament_id } })
+        if (tinfo.current_contestants_amount == tinfo.participants_limit) {
             throw new MyError('reached maximum participants limit')
-        } else if(now >= tinfo.datetime.getOnlyDate().getTime() || now >= tinfo.joining_deadline.getOnlyDate().getTime()) {
+        } else if (now >= tinfo.datetime.getOnlyDate().getTime() || now >= tinfo.joining_deadline.getOnlyDate().getTime()) {
             throw new MyError('exceeded joining deadline')
         }
 
-        await Contestants.create({
-            user_id: id,
-            tournament_id: body.tournament_id,
-            license_id: body.license_id,
-            ranking_pos: body.ranking_pos
-        })
-    } catch(err) {
+        await Promise.all([
+            Contestants.create({
+                user_id: id,
+                tournament_id: body.tournament_id,
+                license_id: body.license_id,
+                ranking_pos: body.ranking_pos
+            }, { transaction: t }),
+
+            tinfo.update({
+                current_contestants_amount: tinfo.current_contestants_amount + 1
+            }, { transaction: t })
+        ])
+
+        t.commit()
+    } catch (err) {
+        t.rollback()
         console.error(err)
         return err
     }
 }
 
-export async function getContestants(body: API.TOURNAMENT.CONTESTANTS.GET.INPUT, id: number): 
-Promise<API.TOURNAMENT.CONTESTANTS.GET.OUTPUT|Error> {
+export async function getContestants(body: API.TOURNAMENT.CONTESTANTS.GET.INPUT, id: number):
+    Promise<API.TOURNAMENT.CONTESTANTS.GET.OUTPUT | Error> {
     try {
-        const tournament = await Tournament.findOne({where: {owner_id: id, id: body.tournament_id}})
-        if(!tournament) {
-            throw new MyError('unauthorized access to tournament')
+        let data
+        const tournament = await Tournament.findOne({ where: { id: body.tournament_id } })
+        if (tournament.owner_id === id) {
+            data = []
+            const contestants = await Contestants.findAll({ where: { tournament_id: body.tournament_id } })
+            for (const c of contestants) {
+                const { name, lastname } = await User.findOne({ where: { id: c.user_id } })
+                data.push({ user_id: c.user_id, name, lastname })
+            }
+        } else { // not owner, asking if taking part in tournament
+            const contestant = await Contestants.findOne({ where: { user_id: id} })
+            data = {taking_part: contestant ? true : false}
         }
 
-        const contestants = await Contestants.findAll({where: {tournament_id: body.tournament_id}})
-        let data = []
-        for(const c of contestants) {
-            const {name, lastname} = await User.findOne({where: {id: c.user_id}})
-            data.push({user_id: c.user_id, name, lastname})
-        }
-        
         return data
-    } catch(err) {
+    } catch (err) {
         console.error(err)
         return err
     }

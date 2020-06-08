@@ -8,7 +8,7 @@ const router = express.Router()
 
 router.route('/contestant')
 .get(TokenMiddleware(), async (req: Request, res: Response) => { // get contestant future tournaments list
-    let data = await getTournamentsInfoForContestant(Number.parseInt(req.cookies["id"]))
+    let data = await getTournamentsInfoForContestant(Number.parseInt(req.cookies["secure-id"]))
     if(!(data instanceof Error)) {
         res.status(HttpCode.OK).send(data)
     } else {

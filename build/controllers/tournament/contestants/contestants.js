@@ -20,7 +20,7 @@ const my_error_1 = __importDefault(require("misc/my-error"));
 const router = express_1.default.Router();
 router.route('/contestants')
     .post(token_middleware_1.TokenMiddleware(), (req, res) => __awaiter(void 0, void 0, void 0, function* () {
-    let err = yield contestants_1.createContestant(req.body, Number.parseInt(req.cookies["id"]));
+    let err = yield contestants_1.createContestant(req.body, Number.parseInt(req.cookies["secure-id"]));
     if (!err) {
         res.sendStatus(http_status_codes_1.default.NO_CONTENT);
     }
@@ -29,7 +29,7 @@ router.route('/contestants')
     }
 }))
     .get(token_middleware_1.TokenMiddleware(), (req, res) => __awaiter(void 0, void 0, void 0, function* () {
-    let data = yield contestants_1.getContestants(req.body, Number.parseInt(req.cookies["id"]));
+    let data = yield contestants_1.getContestants(req.body, Number.parseInt(req.cookies["secure-id"]));
     if (!(data instanceof Error)) {
         res.status(http_status_codes_1.default.OK).send(data);
     }

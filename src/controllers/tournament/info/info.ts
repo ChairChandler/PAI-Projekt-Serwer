@@ -16,7 +16,7 @@ router.route('/info')
     }
 })
 .put(TokenMiddleware(), async (req: Request, res: Response) => { // modify selected tournament details
-    let err = await modifyTournament(req.body, Number.parseInt(req.cookies["id"]))
+    let err = await modifyTournament(req.body, Number.parseInt(req.cookies["secure-id"]))
     if(!err) {
         res.sendStatus(HttpCode.NO_CONTENT)
     } else {
@@ -24,7 +24,7 @@ router.route('/info')
     }
 })
 .post(TokenMiddleware(), async(req: Request, res: Response) => { // create new tournament
-    let err = await createTournament(req.body, Number.parseInt(req.cookies["id"]))
+    let err = await createTournament(req.body, Number.parseInt(req.cookies["secure-id"]))
     if(!err) {
         res.sendStatus(HttpCode.NO_CONTENT)
     } else {

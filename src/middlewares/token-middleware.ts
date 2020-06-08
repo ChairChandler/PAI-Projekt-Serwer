@@ -5,7 +5,7 @@ import server_config from 'config/server.json'
 
 export function TokenMiddleware() {
     return (req: Request, res: Response, next) => {
-        const token = req.cookies["token"] as string
+        const token = req.cookies["secure-token"] as string
         if(!token) {
             res.status(HttpCode.UNAUTHORIZED).send({message: 'No token provided.'})
             return

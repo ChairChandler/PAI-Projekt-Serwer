@@ -23,7 +23,7 @@ function signUp(body) {
         const t = yield database_1.default.transaction();
         try {
             const user = yield user_1.default.create(body, { transaction: t });
-            const href = `http://${server_json_1.default.ip}:${server_json_1.default.port}/user/register/verify?email=${user["email"]}&id=${user["id"]}`;
+            const href = `http://${server_json_1.default.ip}:${server_json_1.default.port}/user/register/verify?email=${user.email}&id=${user.id}`;
             yield smtp_1.default.sendMail({
                 from: smtp_json_1.default.from,
                 to: body.email,

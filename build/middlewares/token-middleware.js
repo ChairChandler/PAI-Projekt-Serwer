@@ -15,7 +15,7 @@ const jwt = __importStar(require("jsonwebtoken"));
 const server_json_1 = __importDefault(require("config/server.json"));
 function TokenMiddleware() {
     return (req, res, next) => {
-        const token = req.cookies["token"];
+        const token = req.cookies["secure-token"];
         if (!token) {
             res.status(http_status_codes_1.default.UNAUTHORIZED).send({ message: 'No token provided.' });
             return;

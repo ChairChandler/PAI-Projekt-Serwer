@@ -29,7 +29,7 @@ router.route('/info')
     }
 }))
     .put(token_middleware_1.TokenMiddleware(), (req, res) => __awaiter(void 0, void 0, void 0, function* () {
-    let err = yield tournament_1.modifyTournament(req.body, Number.parseInt(req.cookies["id"]));
+    let err = yield tournament_1.modifyTournament(req.body, Number.parseInt(req.cookies["secure-id"]));
     if (!err) {
         res.sendStatus(http_status_codes_1.default.NO_CONTENT);
     }
@@ -38,7 +38,7 @@ router.route('/info')
     }
 }))
     .post(token_middleware_1.TokenMiddleware(), (req, res) => __awaiter(void 0, void 0, void 0, function* () {
-    let err = yield tournament_1.createTournament(req.body, Number.parseInt(req.cookies["id"]));
+    let err = yield tournament_1.createTournament(req.body, Number.parseInt(req.cookies["secure-id"]));
     if (!err) {
         res.sendStatus(http_status_codes_1.default.NO_CONTENT);
     }

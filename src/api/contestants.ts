@@ -13,5 +13,5 @@ export namespace TOURNAMENT.CONTESTANTS.GET {
         tournament_id: number
     }
 
-    export type OUTPUT = {user_id: number, name: string, lastname: string}[]
+    export type OUTPUT = { user_id: number, name: string, lastname: string }[] | { taking_part: boolean }
 }

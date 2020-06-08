@@ -12,8 +12,9 @@ router.route('/login')
     const data = await signIn(req.body)
     if(!(data instanceof Error)) {
     	const maxAge = data.expiresIn * 1000
-        res.cookie('id', data.user_id, {maxAge, httpOnly: true})
-        res.cookie('token', data.token, {maxAge, httpOnly: true})
+        res.cookie('id', data.user_id, {maxAge, httpOnly: false})
+        res.cookie('secure-id', data.user_id, {maxAge, httpOnly: true})
+        res.cookie('secure-token', data.token, {maxAge, httpOnly: true})
         res.cookie('token-max-age', maxAge, {maxAge, httpOnly: false})
         res.sendStatus(HttpCode.OK)
     } else {
@@ -29,8 +30,12 @@ router.route('/login')
     }
 })
 .delete(TokenMiddleware(), async (req: Request, res: Response) => { // logout
-    res.cookie('id', '', {maxAge: 0}).cookie('token', '', {maxAge: 0}).cookie('token-max-age', '', {maxAge: 0})
-    res.sendStatus(HttpCode.NO_CONTENT)
+    res
+    .cookie('id', '', {maxAge: 0})
+    .cookie('secure-id', '', {maxAge: 0})
+    .cookie('secure-token', '', {maxAge: 0})
+    .cookie('token-max-age', '', {maxAge: 0})
+    .sendStatus(HttpCode.NO_CONTENT)
 })
 
 router.use('/login', resetRoute)

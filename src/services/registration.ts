@@ -11,7 +11,7 @@ export async function signUp(body: API.USER.REGISTER.POST.INPUT): Promise<void|E
 
     try {
         const user = await User.create(body, {transaction: t})
-        const href = `http://${server_config.ip}:${server_config.port}/user/register/verify?email=${user["email"]}&id=${user["id"]}`
+        const href = `http://${server_config.ip}:${server_config.port}/user/register/verify?email=${user.email}&id=${user.id}`
  
         await SMTP.sendMail({
             from: smtp_config.from,

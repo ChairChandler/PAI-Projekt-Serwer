@@ -40,6 +40,8 @@ Promise<API.TOURNAMENT.INFO.GET.OUTPUT|Error> {
         }
 
         return {
+            tournament_id: info.id,
+            owner_id: info.owner_id,
             tournament_name: info.tournament_name,
             description: info.description,
             organizer: `${owner.name} ${owner.lastname}`,
