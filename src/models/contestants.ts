@@ -35,16 +35,14 @@ Contestant.init({
         onDelete: 'CASCADE',
         onUpdate: 'CASCADE'
     },
-    license_id: {
+    license_id: { // we assume unique license id and ranking position for every contestants regardless of the difference in tournaments 
         type: SQL.STRING,
         allowNull: false,
-        primaryKey: true,
         unique: true,
         validate: {len: [1, 255]}
     },
     ranking_pos: {
         type: SQL.INTEGER.UNSIGNED,
-        primaryKey: true,
         unique: true,
         allowNull: false
     },
