@@ -10,6 +10,7 @@ export namespace TOURNAMENT.LIST.GENERAL.GET {
 //GET TOURNAMENT/LIST/CONTESTANT
 export namespace TOURNAMENT.LIST.CONTESTANT.GET {
     export type OUTPUT = {
+    	tournament_id: number
         tournament_name: string
         description: string | null
         organizer: string

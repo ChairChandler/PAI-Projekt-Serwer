@@ -155,6 +155,7 @@ function getTournamentsInfoForContestant(id) {
                     });
                 }
                 response_data.push({
+                    tournament_id: c.tournament_id,
                     tournament_name: info.tournament_name,
                     description: info.description,
                     organizer: `${owner.name} ${owner.lastname}`,
