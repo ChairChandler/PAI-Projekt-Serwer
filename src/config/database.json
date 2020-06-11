@@ -7,5 +7,5 @@
         "password": "root",
         "logging": false
     },
-    "force_init": true
+    "force_init": false
 }
