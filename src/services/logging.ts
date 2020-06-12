@@ -4,44 +4,48 @@ import User from 'models/user'
 import server_config from 'config/server.json'
 import db from 'static/database'
 import * as jwt from 'jsonwebtoken'
-import * as Crypto from 'crypto'
+import crypto from 'crypto'
 import * as API from 'api/login'
+import Bcrypt from 'bcrypt'
 import MyError from 'misc/my-error'
 
-export async function signIn(body: API.USER.LOGIN.POST.INPUT): Promise<{user_id: number, token: string, expiresIn: number}|Error> {
+export async function signIn(body: API.USER.LOGIN.POST.INPUT): Promise<{ user_id: number, token: string, expiresIn: number } | Error> {
     try {
+        if (body.password.length < 8 || body.password.length > 16) {
+            throw new Error('password must be between 8 and 16 characters')
+        }
+
         const user = await User.findOne({
-            where: {
-                email: body.email,
-                password: body.password
-            }
+            where: { email: body.email }
         })
 
-        if(!user) {
+        if (!user) {
             throw new MyError("user not found")
-        } else if(!user.registered) {
+        } else if (!await Bcrypt.compare(server_config.hash.salt + body.password, user.password)) {
+            throw new MyError("invalid password")
+        } else if (!user.registered) {
             throw new MyError("user hasn't finished registration")
         }
-        
-        const id =  Crypto.randomBytes(64).toString('hex')
-        const token = jwt.sign({id: id}, server_config.token.secret, {expiresIn: server_config.token.expiresIn}) // 24 hours
-        return {user_id: user.id, token, expiresIn: server_config.token.expiresIn}
-    } catch(err) {
+
+        const id = crypto.randomBytes(64).toString('hex')
+        const token = jwt.sign({ id: id }, server_config.token.secret, { expiresIn: server_config.token.expiresIn }) // 24 hours
+        return { user_id: user.id, token, expiresIn: server_config.token.expiresIn }
+    } catch (err) {
         console.error(err)
         return err
     }
 }
 
-export async function remindPassword(body: API.USER.LOGIN.GET.INPUT): Promise<void|Error> {
+export async function remindPassword(body: API.USER.LOGIN.GET.INPUT): Promise<void | Error> {
     const t = await db.transaction()
-    
+
     try {
-        let user = await User.findOne({where: {email: body.email}})
-        if(!user) {
+        let user = await User.findOne({ where: { email: body.email } })
+        if (!user) {
             throw new MyError("invalid email")
         }
 
-        await user.update({forgot_password: true}, {transaction: t})
+        await user.update({ forgot_password: true }, { transaction: t })
 
         await SMTP.sendMail({
             from: smtp_config.from,
@@ -57,25 +61,28 @@ export async function remindPassword(body: API.USER.LOGIN.GET.INPUT): Promise<vo
             `
         })
         await t.commit()
-    } catch(err) {
+    } catch (err) {
         await t.rollback()
         console.error(err)
         return err
     }
 }
 
-export async function changePassword(body: API.USER.LOGIN.RESET.POST.INPUT): Promise<void|Error> {
+export async function changePassword(body: API.USER.LOGIN.RESET.POST.INPUT): Promise<void | Error> {
     const t = await db.transaction()
     try {
-        const user = await User.findOne({where: {email: body.email}})
-        if(!user.forgot_password) {
+        const user = await User.findOne({ where: { email: body.email } })
+        if (!user.forgot_password) {
             throw new MyError("user hasn't requested a password change")
+        } else if (body.password.length < 8 || body.password.length > 16) {
+            throw new Error('password must be between 8 and 16 characters')
         }
 
-        await user.update({password: body.password, forgot_password: false}, {transaction: t})
-        
+        const hash = await Bcrypt.hash(server_config.hash.salt + body.password, server_config.hash.rounds)
+        await user.update({ password: hash, forgot_password: false }, { transaction: t })
+
         t.commit()
-    } catch(err) {
+    } catch (err) {
         t.rollback()
         console.error(err)
         return err

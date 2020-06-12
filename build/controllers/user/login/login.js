@@ -18,16 +18,18 @@ const logging_1 = require("services/logging");
 const token_middleware_1 = require("middlewares/token-middleware");
 const reset_1 = __importDefault(require("./reset/reset"));
 const my_error_1 = __importDefault(require("misc/my-error"));
+const generate_keys_1 = require("init/generate-keys");
 const router = express_1.default.Router();
 router.route('/login')
     .post((req, res) => __awaiter(void 0, void 0, void 0, function* () {
+    req.body.password = generate_keys_1.decrypt(req.body.password);
     const data = yield logging_1.signIn(req.body);
     if (!(data instanceof Error)) {
         const maxAge = data.expiresIn * 1000;
         res.cookie('id', data.user_id, { maxAge, httpOnly: false });
         res.cookie('secure-id', data.user_id, { maxAge, httpOnly: true });
         res.cookie('secure-token', data.token, { maxAge, httpOnly: true });
-        res.cookie('token-max-age', maxAge, { maxAge, httpOnly: false });
+        res.cookie('token-expire-date', new Date(Date.now() + maxAge).toString(), { maxAge, httpOnly: false });
         res.sendStatus(http_status_codes_1.default.OK);
     }
     else {
@@ -48,7 +50,7 @@ router.route('/login')
         .cookie('id', '', { maxAge: 0 })
         .cookie('secure-id', '', { maxAge: 0 })
         .cookie('secure-token', '', { maxAge: 0 })
-        .cookie('token-max-age', '', { maxAge: 0 })
+        .cookie('token-expire-date', '', { expires: new Date() })
         .sendStatus(http_status_codes_1.default.NO_CONTENT);
 }));
 router.use('/login', reset_1.default);

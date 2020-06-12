@@ -18,6 +18,7 @@
     },
     "homepage": "https://github.com/ChairChandler/PAI-Projekt-Serwer#readme",
     "dependencies": {
+        "@types/bcrypt": "^3.0.0",
         "@types/colors": "^1.2.1",
         "@types/cookie-parser": "^1.4.2",
         "@types/crypto-js": "^3.1.47",
@@ -26,6 +27,7 @@
         "@types/jsonwebtoken": "^8.5.0",
         "@types/nodemailer": "^6.4.0",
         "@types/sequelize": "^4.28.9",
+        "bcrypt": "^5.0.0",
         "colors": "^1.4.0",
         "cookie-parser": "^1.4.5",
         "cors": "^2.8.5",

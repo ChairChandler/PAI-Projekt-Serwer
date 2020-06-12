@@ -5,11 +5,14 @@ import server_config from 'config/server.json'
 import db from 'static/database'
 import * as API from 'api/register'
 import MyError from 'misc/my-error'
+import Bcrypt from 'bcrypt'
 
 export async function signUp(body: API.USER.REGISTER.POST.INPUT): Promise<void|Error> {
     const t = await db.transaction()
 
     try {
+        const hash = await Bcrypt.hash(server_config.hash.salt + body.password, server_config.hash.rounds)
+        body.password = hash
         const user = await User.create(body, {transaction: t})
         const href = `http://${server_config.ip}:${server_config.port}/user/register/verify?email=${user.email}&id=${user.id}`
  

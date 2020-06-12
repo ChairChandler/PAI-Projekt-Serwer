@@ -26,11 +26,14 @@ const client_json_1 = __importDefault(require("config/client.json"));
 const tables_1 = __importDefault(require("init/tables"));
 const query_params_middleware_1 = require("middlewares/query-params-middleware");
 const access_log_middleware_1 = require("middlewares/access-log-middleware");
+const public_key_1 = require("middlewares/public-key");
 const cookie_parser_1 = __importDefault(require("cookie-parser"));
 const ladder_1 = require("services/ladder");
 const time = __importStar(require("time-convert"));
 require("init/date");
 const cors_1 = __importDefault(require("cors"));
+const generate_keys_1 = __importDefault(require("init/generate-keys"));
+generate_keys_1.default(main);
 function main() {
     return __awaiter(this, void 0, void 0, function* () {
         yield tables_1.default();
@@ -42,6 +45,7 @@ function main() {
         app.use(express_1.default.json());
         app.use(query_params_middleware_1.QueryParamsToJson());
         app.use(controller_1.default);
+        app.use('/public-key', public_key_1.PublicKey());
         setInterval(() => __awaiter(this, void 0, void 0, function* () {
             const err = yield ladder_1.shuffleContestants();
             if (err) {
@@ -53,4 +57,3 @@ function main() {
         });
     });
 }
-main();

@@ -25,24 +25,28 @@ const user_1 = __importDefault(require("models/user"));
 const server_json_1 = __importDefault(require("config/server.json"));
 const database_1 = __importDefault(require("static/database"));
 const jwt = __importStar(require("jsonwebtoken"));
-const Crypto = __importStar(require("crypto"));
+const crypto_1 = __importDefault(require("crypto"));
+const bcrypt_1 = __importDefault(require("bcrypt"));
 const my_error_1 = __importDefault(require("misc/my-error"));
 function signIn(body) {
     return __awaiter(this, void 0, void 0, function* () {
         try {
+            if (body.password.length < 8 || body.password.length > 16) {
+                throw new Error('password must be between 8 and 16 characters');
+            }
             const user = yield user_1.default.findOne({
-                where: {
-                    email: body.email,
-                    password: body.password
-                }
+                where: { email: body.email }
             });
             if (!user) {
                 throw new my_error_1.default("user not found");
             }
+            else if (!(yield bcrypt_1.default.compare(server_json_1.default.hash.salt + body.password, user.password))) {
+                throw new my_error_1.default("invalid password");
+            }
             else if (!user.registered) {
                 throw new my_error_1.default("user hasn't finished registration");
             }
-            const id = Crypto.randomBytes(64).toString('hex');
+            const id = crypto_1.default.randomBytes(64).toString('hex');
             const token = jwt.sign({ id: id }, server_json_1.default.token.secret, { expiresIn: server_json_1.default.token.expiresIn }); // 24 hours
             return { user_id: user.id, token, expiresIn: server_json_1.default.token.expiresIn };
         }
@@ -93,7 +97,11 @@ function changePassword(body) {
             if (!user.forgot_password) {
                 throw new my_error_1.default("user hasn't requested a password change");
             }
-            yield user.update({ password: body.password, forgot_password: false }, { transaction: t });
+            else if (body.password.length < 8 || body.password.length > 16) {
+                throw new Error('password must be between 8 and 16 characters');
+            }
+            const hash = yield bcrypt_1.default.hash(server_json_1.default.hash.salt + body.password, server_json_1.default.hash.rounds);
+            yield user.update({ password: hash, forgot_password: false }, { transaction: t });
             t.commit();
         }
         catch (err) {

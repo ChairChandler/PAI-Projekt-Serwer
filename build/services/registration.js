@@ -18,10 +18,13 @@ const user_1 = __importDefault(require("models/user"));
 const server_json_1 = __importDefault(require("config/server.json"));
 const database_1 = __importDefault(require("static/database"));
 const my_error_1 = __importDefault(require("misc/my-error"));
+const bcrypt_1 = __importDefault(require("bcrypt"));
 function signUp(body) {
     return __awaiter(this, void 0, void 0, function* () {
         const t = yield database_1.default.transaction();
         try {
+            const hash = yield bcrypt_1.default.hash(server_json_1.default.hash.salt + body.password, server_json_1.default.hash.rounds);
+            body.password = hash;
             const user = yield user_1.default.create(body, { transaction: t });
             const href = `http://${server_json_1.default.ip}:${server_json_1.default.port}/user/register/verify?email=${user.email}&id=${user.id}`;
             yield smtp_1.default.sendMail({

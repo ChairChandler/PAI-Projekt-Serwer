@@ -38,8 +38,7 @@ User.init({
     },
     password: {
         type: SQL.STRING, 
-        allowNull: false, 
-        validate: {len: [8, 16]}
+        allowNull: false
     },
     registered: {
         type: SQL.BOOLEAN,
