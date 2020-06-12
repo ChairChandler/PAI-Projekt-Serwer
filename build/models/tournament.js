@@ -48,7 +48,7 @@ Tournament.init({
         validate: { len: [8, 24] }
     },
     description: {
-        type: SQL.STRING,
+        type: SQL.TEXT({ length: 'long' }),
         validate: { len: [0, 255] }
     },
     datetime: {

@@ -28,20 +28,20 @@ const jwt = __importStar(require("jsonwebtoken"));
 const crypto_1 = __importDefault(require("crypto"));
 const bcrypt_1 = __importDefault(require("bcrypt"));
 const my_error_1 = __importDefault(require("misc/my-error"));
+const generate_keys_1 = require("init/generate-keys");
 function signIn(body) {
     return __awaiter(this, void 0, void 0, function* () {
         try {
+            body.password = generate_keys_1.decrypt(body.password);
             if (body.password.length < 8 || body.password.length > 16) {
                 throw new Error('password must be between 8 and 16 characters');
             }
             const user = yield user_1.default.findOne({
                 where: { email: body.email }
             });
-            if (!user) {
-                throw new my_error_1.default("user not found");
-            }
-            else if (!(yield bcrypt_1.default.compare(server_json_1.default.hash.salt + body.password, user.password))) {
-                throw new my_error_1.default("invalid password");
+            if (!(user && bcrypt_1.default.compareSync(body.password, user.password))) {
+                console.log(body.password, user.password);
+                throw new my_error_1.default("invalid username or password");
             }
             else if (!user.registered) {
                 throw new my_error_1.default("user hasn't finished registration");
@@ -100,7 +100,7 @@ function changePassword(body) {
             else if (body.password.length < 8 || body.password.length > 16) {
                 throw new Error('password must be between 8 and 16 characters');
             }
-            const hash = yield bcrypt_1.default.hash(server_json_1.default.hash.salt + body.password, server_json_1.default.hash.rounds);
+            const hash = bcrypt_1.default.hashSync(body.password, server_json_1.default.saltRounds);
             yield user.update({ password: hash, forgot_password: false }, { transaction: t });
             t.commit();
         }

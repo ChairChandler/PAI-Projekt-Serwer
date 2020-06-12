@@ -37,7 +37,7 @@ User.init({
         validate: { isEmail: true }
     },
     password: {
-        type: SQL.STRING,
+        type: SQL.TEXT({ length: 'long' }),
         allowNull: false
     },
     registered: {

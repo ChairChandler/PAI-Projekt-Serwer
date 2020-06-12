@@ -21,14 +21,14 @@ Logo.init({
         type: SQL.INTEGER.UNSIGNED,
         allowNull: false,
         references: {
-          model: Tournament,
-          key: 'id'
+            model: Tournament,
+            key: 'id'
         },
         onDelete: 'CASCADE',
         onUpdate: 'CASCADE'
     },
     logo: {
-        type: SQL.BLOB,
+        type: SQL.BLOB({ length: 'long' }),
         allowNull: false
     }
 }, {

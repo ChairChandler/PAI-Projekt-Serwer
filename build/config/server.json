@@ -5,8 +5,5 @@
         "secret": "secretkey",
         "expiresIn": 86400
     },
-    "hash": {
-        "rounds": 10,
-        "salt": "1234567890"
-    }
+    "saltRounds": 10
 }

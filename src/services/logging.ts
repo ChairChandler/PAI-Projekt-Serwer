@@ -8,9 +8,12 @@ import crypto from 'crypto'
 import * as API from 'api/login'
 import Bcrypt from 'bcrypt'
 import MyError from 'misc/my-error'
+import { decrypt } from 'init/generate-keys'
 
 export async function signIn(body: API.USER.LOGIN.POST.INPUT): Promise<{ user_id: number, token: string, expiresIn: number } | Error> {
     try {
+        body.password = decrypt(body.password)
+
         if (body.password.length < 8 || body.password.length > 16) {
             throw new Error('password must be between 8 and 16 characters')
         }
@@ -19,10 +22,9 @@ export async function signIn(body: API.USER.LOGIN.POST.INPUT): Promise<{ user_id
             where: { email: body.email }
         })
 
-        if (!user) {
-            throw new MyError("user not found")
-        } else if (!await Bcrypt.compare(server_config.hash.salt + body.password, user.password)) {
-            throw new MyError("invalid password")
+        if (!(user && Bcrypt.compareSync(body.password, user.password))) {
+            console.log(body.password, user.password)
+            throw new MyError("invalid username or password")
         } else if (!user.registered) {
             throw new MyError("user hasn't finished registration")
         }
@@ -78,7 +80,7 @@ export async function changePassword(body: API.USER.LOGIN.RESET.POST.INPUT): Pro
             throw new Error('password must be between 8 and 16 characters')
         }
 
-        const hash = await Bcrypt.hash(server_config.hash.salt + body.password, server_config.hash.rounds)
+        const hash = Bcrypt.hashSync(body.password, server_config.saltRounds)
         await user.update({ password: hash, forgot_password: false }, { transaction: t })
 
         t.commit()

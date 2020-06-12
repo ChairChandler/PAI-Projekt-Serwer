@@ -4,14 +4,11 @@ import { signIn, remindPassword } from 'services/logging'
 import { TokenMiddleware } from 'middlewares/token-middleware'
 import resetRoute from './reset/reset'
 import MyError from 'misc/my-error'
-import { decrypt } from 'init/generate-keys'
 
 const router = express.Router()
 
 router.route('/login')
 .post(async (req: Request, res: Response) => { // sign in
-    req.body.password = decrypt(req.body.password)
-    
     const data = await signIn(req.body)
     if(!(data instanceof Error)) {
     	const maxAge = data.expiresIn * 1000

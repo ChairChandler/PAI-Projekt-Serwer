@@ -18,16 +18,16 @@ class Tournament extends SQL.Model {
     public readonly updatedAt: Date
 
     public static isAfterCurrentDay(val: Date) {
-        if(new Date().getOnlyDate().getTime() >= val.getOnlyDate().getTime()) {
+        if (new Date().getOnlyDate().getTime() >= val.getOnlyDate().getTime()) {
             throw Error("date have to be minimum 1 day later than the current date")
         }
-    } 
+    }
 
     public static isBeforeTournamentDay(val: Date) {
-        if(val.getOnlyDate().getTime() >= this["datetime"].getOnlyDate().getTime()) {
+        if (val.getOnlyDate().getTime() >= this["datetime"].getOnlyDate().getTime()) {
             throw Error("date have to be minimum 1 day before the tournament date")
         }
-    } 
+    }
 }
 
 Tournament.init({
@@ -47,29 +47,29 @@ Tournament.init({
         onUpdate: 'CASCADE'
     },
     tournament_name: {
-        type: SQL.STRING, 
+        type: SQL.STRING,
         allowNull: false,
         unique: true,
-        validate: {len: [8, 24]}
+        validate: { len: [8, 24] }
     },
     description: {
-        type: SQL.STRING,
-        validate: {len: [0, 255]}
+        type: SQL.TEXT({ length: 'long' }),
+        validate: { len: [0, 255] }
     },
     datetime: {
         type: SQL.DATE,
         allowNull: false,
-        validate: {isAfterCurrentDay: Tournament.isAfterCurrentDay}
+        validate: { isAfterCurrentDay: Tournament.isAfterCurrentDay }
     },
     localization_lat: {
         type: SQL.FLOAT,
         allowNull: false,
-        validate: {min: -90, max: 90}
+        validate: { min: -90, max: 90 }
     },
     localization_lng: {
         type: SQL.FLOAT,
         allowNull: false,
-        validate: {min: -180, max: 180}
+        validate: { min: -180, max: 180 }
     },
     participants_limit: {
         type: SQL.INTEGER.UNSIGNED,

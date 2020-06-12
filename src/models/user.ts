@@ -21,23 +21,23 @@ User.init({
         autoIncrement: true
     },
     name: {
-        type: SQL.STRING, 
-        allowNull: false, 
-        validate: {isAlpha: true}
+        type: SQL.STRING,
+        allowNull: false,
+        validate: { isAlpha: true }
     },
     lastname: {
-        type: SQL.STRING, 
-        allowNull: false, 
-        validate: {isAlpha: true}
+        type: SQL.STRING,
+        allowNull: false,
+        validate: { isAlpha: true }
     },
     email: {
-        type: SQL.STRING, 
+        type: SQL.STRING,
         allowNull: false,
-        unique: true, 
-        validate: {isEmail: true}
+        unique: true,
+        validate: { isEmail: true }
     },
     password: {
-        type: SQL.STRING, 
+        type: SQL.TEXT({ length: 'long' }),
         allowNull: false
     },
     registered: {
@@ -50,7 +50,7 @@ User.init({
         allowNull: false,
         defaultValue: false
     }
-},  {
+}, {
     sequelize: db,
     tableName: 'users'
 })

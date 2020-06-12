@@ -18,11 +18,9 @@ const logging_1 = require("services/logging");
 const token_middleware_1 = require("middlewares/token-middleware");
 const reset_1 = __importDefault(require("./reset/reset"));
 const my_error_1 = __importDefault(require("misc/my-error"));
-const generate_keys_1 = require("init/generate-keys");
 const router = express_1.default.Router();
 router.route('/login')
     .post((req, res) => __awaiter(void 0, void 0, void 0, function* () {
-    req.body.password = generate_keys_1.decrypt(req.body.password);
     const data = yield logging_1.signIn(req.body);
     if (!(data instanceof Error)) {
         const maxAge = data.expiresIn * 1000;
