@@ -32,12 +32,10 @@ function init() {
             if (db_config.force_init) {
                 yield database_1.default.query('SET FOREIGN_KEY_CHECKS = 0');
             }
-            yield Promise.all([
-                user_1.default.sync(conf),
-                contestants_1.default.sync(conf),
-                logo_1.default.sync(conf),
-                tournament_1.default.sync(conf)
-            ]);
+            yield user_1.default.sync(conf);
+            yield contestants_1.default.sync(conf);
+            yield logo_1.default.sync(conf);
+            yield tournament_1.default.sync(conf);
             if (db_config.force_init) {
                 yield database_1.default.query('SET FOREIGN_KEY_CHECKS = 1');
             }
