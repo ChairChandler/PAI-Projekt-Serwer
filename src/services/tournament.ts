@@ -7,7 +7,7 @@ import db from 'static/database'
 import Schedule from 'node-schedule'
 import { shuffleTournament } from 'services/ladder'
 import JobStorage from 'static/jobs-storage'
-import LogicError from 'misc/logic-error.ts'
+import LogicError from 'misc/logic-error'
 
 export async function getTournamentList(body: API.TOURNAMENT.LIST.GENERAL.GET.INPUT):
     Promise<API.TOURNAMENT.LIST.GENERAL.GET.OUTPUT | Error> {

@@ -16,7 +16,7 @@ const contestants_1 = __importDefault(require("models/contestants"));
 const tournament_1 = __importDefault(require("models/tournament"));
 const user_1 = __importDefault(require("models/user"));
 const database_1 = __importDefault(require("static/database"));
-const logic_error_ts_1 = __importDefault(require("misc/logic-error.ts"));
+const logic_error_1 = __importDefault(require("misc/logic-error"));
 function createContestant(body, id) {
     return __awaiter(this, void 0, void 0, function* () {
         const t = yield database_1.default.transaction();
@@ -24,13 +24,13 @@ function createContestant(body, id) {
             const now = new Date().getOnlyDate().getTime();
             const tinfo = yield tournament_1.default.findOne({ where: { id: body.tournament_id } });
             if (tinfo.finished) {
-                throw new logic_error_ts_1.default('cannot join to finished tournament');
+                throw new logic_error_1.default('cannot join to finished tournament');
             }
             else if (tinfo.current_contestants_amount == tinfo.participants_limit) {
-                throw new logic_error_ts_1.default('reached maximum participants limit');
+                throw new logic_error_1.default('reached maximum participants limit');
             }
             else if (now >= tinfo.datetime.getOnlyDate().getTime() || now >= tinfo.joining_deadline.getOnlyDate().getTime()) {
-                throw new logic_error_ts_1.default('exceeded joining deadline');
+                throw new logic_error_1.default('exceeded joining deadline');
             }
             yield Promise.all([
                 contestants_1.default.create({

@@ -6,7 +6,7 @@ import db from 'static/database'
 import * as API from 'api/register'
 import Bcrypt from 'bcrypt'
 import { decrypt } from 'init/generate-keys'
-import LogicError from 'misc/logic-error.ts'
+import LogicError from 'misc/logic-error'
 
 export async function signUp(body: API.USER.REGISTER.POST.INPUT): Promise<void | Error> {
     const t = await db.transaction()

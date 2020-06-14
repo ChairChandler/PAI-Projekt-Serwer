@@ -6,7 +6,7 @@ import { Transaction } from 'sequelize'
 import JobStorage from 'static/jobs-storage'
 import Schedule from 'node-schedule'
 import * as API from 'api/tournament'
-import LogicError from 'misc/logic-error.ts'
+import LogicError from 'misc/logic-error'
 
 export async function shuffleAllTournaments() {
     const t = await db.transaction({ isolationLevel: Transaction.ISOLATION_LEVELS.SERIALIZABLE })

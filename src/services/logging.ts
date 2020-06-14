@@ -8,7 +8,7 @@ import crypto from 'crypto'
 import * as API from 'api/login'
 import Bcrypt from 'bcrypt'
 import { decrypt } from 'init/generate-keys'
-import LogicError from 'misc/logic-error.ts'
+import LogicError from 'misc/logic-error'
 
 export async function signIn(body: API.USER.LOGIN.POST.INPUT): Promise<{ user_id: number, token: string, expiresIn: number } | Error | LogicError> {
     try {

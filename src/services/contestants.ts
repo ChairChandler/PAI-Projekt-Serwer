@@ -3,7 +3,7 @@ import Tournament from 'models/tournament'
 import User from 'models/user'
 import * as API from 'api/contestants'
 import db from 'static/database'
-import LogicError from 'misc/logic-error.ts'
+import LogicError from 'misc/logic-error'
 
 export async function createContestant(body: API.TOURNAMENT.CONTESTANTS.POST.INPUT, id: number): Promise<void | Error | LogicError> {
     const t = await db.transaction()

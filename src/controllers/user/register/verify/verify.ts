@@ -2,7 +2,7 @@ import express, { Request, Response } from 'express'
 import clientInfo from 'config/client.json'
 import HttpCode from 'http-status-codes'
 import { verify } from 'services/registration'
-import LogicError from 'misc/logic-error.ts'
+import LogicError from 'misc/logic-error'
 
 const router = express.Router()
 

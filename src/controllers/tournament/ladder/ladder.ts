@@ -2,7 +2,7 @@ import express, { Request, Response } from 'express'
 import { TokenMiddleware } from 'middlewares/token-middleware'
 import { getLadderInfo, setScore } from 'services/ladder'
 import HttpCode from 'http-status-codes'
-import LogicError from 'misc/logic-error.ts'
+import LogicError from 'misc/logic-error'
 
 const router = express.Router()
 

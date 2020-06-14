@@ -19,7 +19,7 @@ const database_1 = __importDefault(require("static/database"));
 const sequelize_1 = require("sequelize");
 const jobs_storage_1 = __importDefault(require("static/jobs-storage"));
 const node_schedule_1 = __importDefault(require("node-schedule"));
-const logic_error_ts_1 = __importDefault(require("misc/logic-error.ts"));
+const logic_error_1 = __importDefault(require("misc/logic-error"));
 function shuffleAllTournaments() {
     return __awaiter(this, void 0, void 0, function* () {
         const t = yield database_1.default.transaction({ isolationLevel: sequelize_1.Transaction.ISOLATION_LEVELS.SERIALIZABLE });
@@ -84,7 +84,7 @@ function setScore(body) {
         try {
             const tournament = yield tournament_1.default.findOne({ where: { id: body.tournament_id }, transaction: t });
             if (tournament.finished) {
-                throw new logic_error_ts_1.default('tournament is finished, cannot change position');
+                throw new logic_error_1.default('tournament is finished, cannot change position');
             }
             const contestant = yield contestants_1.default.findOne({
                 where: { tournament_id: body.tournament_id, user_id: body.contestant_id }, transaction: t
@@ -111,14 +111,14 @@ function setScore(body) {
             if (enemy) {
                 if (body.winner && enemy.defeated === false) { // WIN-WIN
                     yield enemy.update({ defeated: null, node_id: enemyLoserNode }, { transaction: t });
-                    error = new logic_error_ts_1.default('winner-winner conflict');
+                    error = new logic_error_1.default('winner-winner conflict');
                 }
                 else if (body.winner && enemy.defeated) { // WIN-LOSE
                     yield contestant.update({ defeated: null, node_id: winnerNode }, { transaction: t });
                 }
                 else if (!body.winner && enemy.defeated) { // LOSE-LOSE
                     yield enemy.update({ defeated: null }, { transaction: t });
-                    error = new logic_error_ts_1.default('loser-loser conflict');
+                    error = new logic_error_1.default('loser-loser conflict');
                 }
                 else if (!body.winner && !enemy.defeated) { // LOSE-WIN
                     yield Promise.all([
@@ -128,7 +128,7 @@ function setScore(body) {
                 }
             }
             else {
-                error = new logic_error_ts_1.default('enemy has not played with contestant');
+                error = new logic_error_1.default('enemy has not played with contestant');
             }
             if (error) {
                 t.commit();

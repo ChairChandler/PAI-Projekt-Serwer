@@ -1,7 +1,7 @@
 import express, { Request, Response} from 'express'
 import HttpCode from 'http-status-codes'
 import { changePassword } from 'services/logging'
-import LogicError from 'misc/logic-error.ts'
+import LogicError from 'misc/logic-error'
 
 const router = express.Router()
 

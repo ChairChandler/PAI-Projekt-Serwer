@@ -17,7 +17,7 @@ const http_status_codes_1 = __importDefault(require("http-status-codes"));
 const logging_1 = require("services/logging");
 const token_middleware_1 = require("middlewares/token-middleware");
 const reset_1 = __importDefault(require("./reset/reset"));
-const logic_error_ts_1 = __importDefault(require("misc/logic-error.ts"));
+const logic_error_1 = __importDefault(require("misc/logic-error"));
 const router = express_1.default.Router();
 router.route('/login')
     .post((req, res) => __awaiter(void 0, void 0, void 0, function* () {
@@ -31,7 +31,7 @@ router.route('/login')
         res.sendStatus(http_status_codes_1.default.OK);
     }
     else {
-        res.status(http_status_codes_1.default.INTERNAL_SERVER_ERROR).send(data instanceof logic_error_ts_1.default ? data.message : 'cannot sign in');
+        res.status(http_status_codes_1.default.INTERNAL_SERVER_ERROR).send(data instanceof logic_error_1.default ? data.message : 'cannot sign in');
     }
 }))
     .get((req, res) => __awaiter(void 0, void 0, void 0, function* () {
@@ -40,7 +40,7 @@ router.route('/login')
         res.sendStatus(http_status_codes_1.default.NO_CONTENT);
     }
     else {
-        res.status(http_status_codes_1.default.NOT_FOUND).send(err instanceof logic_error_ts_1.default ? err.message : 'cannot do that action');
+        res.status(http_status_codes_1.default.NOT_FOUND).send(err instanceof logic_error_1.default ? err.message : 'cannot do that action');
     }
 }))
     .delete(token_middleware_1.TokenMiddleware(), (req, res) => __awaiter(void 0, void 0, void 0, function* () {

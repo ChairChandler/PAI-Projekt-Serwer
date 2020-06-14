@@ -3,7 +3,7 @@ import HttpCode from 'http-status-codes'
 import { signIn, remindPassword } from 'services/logging'
 import { TokenMiddleware } from 'middlewares/token-middleware'
 import resetRoute from './reset/reset'
-import LogicError from 'misc/logic-error.ts'
+import LogicError from 'misc/logic-error'
 
 const router = express.Router()
 

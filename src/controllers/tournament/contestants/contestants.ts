@@ -2,7 +2,7 @@ import express, { Request, Response}from 'express'
 import HttpCode from 'http-status-codes'
 import { TokenMiddleware } from 'middlewares/token-middleware'
 import { createContestant, getContestants } from 'services/contestants'
-import LogicError from 'misc/logic-error.ts'
+import LogicError from 'misc/logic-error'
 
 const router = express.Router()
 

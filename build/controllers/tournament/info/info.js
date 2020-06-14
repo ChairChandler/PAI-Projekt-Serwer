@@ -16,7 +16,7 @@ const express_1 = __importDefault(require("express"));
 const http_status_codes_1 = __importDefault(require("http-status-codes"));
 const tournament_1 = require("services/tournament");
 const token_middleware_1 = require("middlewares/token-middleware");
-const logic_error_ts_1 = __importDefault(require("misc/logic-error.ts"));
+const logic_error_1 = __importDefault(require("misc/logic-error"));
 const router = express_1.default.Router();
 router.route('/info')
     .get((req, res) => __awaiter(void 0, void 0, void 0, function* () {
@@ -34,7 +34,7 @@ router.route('/info')
         res.sendStatus(http_status_codes_1.default.NO_CONTENT);
     }
     else {
-        res.status(http_status_codes_1.default.INTERNAL_SERVER_ERROR).send(err instanceof logic_error_ts_1.default ? err.message : 'cannot modify tournament info');
+        res.status(http_status_codes_1.default.INTERNAL_SERVER_ERROR).send(err instanceof logic_error_1.default ? err.message : 'cannot modify tournament info');
     }
 }))
     .post(token_middleware_1.TokenMiddleware(), (req, res) => __awaiter(void 0, void 0, void 0, function* () {
