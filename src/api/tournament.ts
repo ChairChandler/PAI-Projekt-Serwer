@@ -79,3 +79,24 @@ export namespace TOURNAMENT.INFO.PUT {
         */
     }
 }
+
+// GET TOURNAMENT/LADDER
+export namespace TOURNAMENT.LADDER.GET {
+    export interface INPUT {
+        tournament_id: number
+    }
+
+    export interface OUTPUT {
+        nodes: number
+        contestants: { id: number, name: string, node_id: number }[] //node_id min 0
+    }
+}
+
+// PUT TOURNAMENT/LADDER
+export namespace TOURNAMENT.LADDER.PUT {
+    export interface INPUT {
+        tournament_id: number
+        contestant_id: number
+        winner: boolean
+    }
+}

@@ -7,7 +7,6 @@ import * as jwt from 'jsonwebtoken'
 import crypto from 'crypto'
 import * as API from 'api/login'
 import Bcrypt from 'bcrypt'
-import MyError from 'misc/my-error'
 import { decrypt } from 'init/generate-keys'
 
 export async function signIn(body: API.USER.LOGIN.POST.INPUT): Promise<{ user_id: number, token: string, expiresIn: number } | Error> {
@@ -23,11 +22,11 @@ export async function signIn(body: API.USER.LOGIN.POST.INPUT): Promise<{ user_id
         })
 
         if (!user) {
-            throw new MyError("invalid username or password")
+            throw Error("invalid username or password")
         } else if (!Bcrypt.compareSync(body.password, user.password)) {
-            throw new MyError("invalid username or password")
+            throw Error("invalid username or password")
         } else if (!user.registered) {
-            throw new MyError("user hasn't finished registration")
+            throw Error("user hasn't finished registration")
         }
 
         const id = crypto.randomBytes(64).toString('hex')
@@ -45,7 +44,7 @@ export async function remindPassword(body: API.USER.LOGIN.GET.INPUT): Promise<vo
     try {
         let user = await User.findOne({ where: { email: body.email } })
         if (!user) {
-            throw new MyError("invalid email")
+            throw Error("invalid email")
         }
 
         const token = crypto.randomBytes(64).toString('hex')
@@ -82,11 +81,11 @@ export async function changePassword(body: API.USER.LOGIN.RESET.POST.INPUT): Pro
     try {
         const user = await User.findOne({ where: { email: body.email } })
         if (!user.forgot_password_token) {
-            throw new MyError("user hasn't requested a password change")
+            throw Error("user hasn't requested a password change")
         } else if (body.password.length < 8 || body.password.length > 16) {
-            throw new Error('password must be between 8 and 16 characters')
+            throw Error('password must be between 8 and 16 characters')
         } else if(body.token !== user.forgot_password_token) {
-            throw new Error('invalid reset token')
+            throw Error('invalid reset token')
         }
 
         const hash = Bcrypt.hashSync(body.password, server_config.saltRounds)

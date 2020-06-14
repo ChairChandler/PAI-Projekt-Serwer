@@ -4,7 +4,6 @@ import User from 'models/user'
 import server_config from 'config/server.json'
 import db from 'static/database'
 import * as API from 'api/register'
-import MyError from 'misc/my-error'
 import Bcrypt from 'bcrypt'
 import { decrypt } from 'init/generate-keys'
 
@@ -43,9 +42,9 @@ export async function verify(body: API.USER.REGISTER.VERIFY.GET.INPUT): Promise<
         })
 
         if (!data) {
-            throw new MyError("user not found")
+            throw Error("user not found")
         } else if (data.registered) {
-            throw new MyError("user has been registered before")
+            throw Error("user has been registered before")
         }
 
         await data.update({ registered: true }, { transaction: t })

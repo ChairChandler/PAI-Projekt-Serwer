@@ -9,6 +9,7 @@ class Contestant extends SQL.Model {
     public license_id: string
     public ranking_pos: number
     public node_id: number | null
+    public defeated?: boolean
 
     public readonly createdAt: Date
     public readonly updatedAt: Date
@@ -49,6 +50,10 @@ Contestant.init({
     node_id: {
         type: SQL.INTEGER.UNSIGNED,
         defaultValue: null
+    },
+    defeated: {
+        type: SQL.BOOLEAN,
+        defaultValue: false
     }
 },  {
     sequelize: db,

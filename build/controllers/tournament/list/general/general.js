@@ -15,7 +15,6 @@ Object.defineProperty(exports, "__esModule", { value: true });
 const express_1 = __importDefault(require("express"));
 const http_status_codes_1 = __importDefault(require("http-status-codes"));
 const tournament_1 = require("services/tournament");
-const my_error_1 = __importDefault(require("misc/my-error"));
 const router = express_1.default.Router();
 // get tournaments list
 router.route('/general')
@@ -25,7 +24,7 @@ router.route('/general')
         res.status(http_status_codes_1.default.OK).send(data);
     }
     else {
-        res.status(http_status_codes_1.default.BAD_REQUEST).send(data instanceof my_error_1.default ? data.message : 'cannot retrieve tournaments list');
+        res.status(http_status_codes_1.default.BAD_REQUEST).send(data instanceof Error ? data.message : 'cannot retrieve tournaments list');
     }
 }));
 exports.default = router;

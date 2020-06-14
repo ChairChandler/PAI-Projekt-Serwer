@@ -82,6 +82,10 @@ Tournament.init({
         type: SQL.INTEGER.UNSIGNED,
         allowNull: false,
         defaultValue: 0
+    },
+    finished: {
+        type: SQL.BOOLEAN,
+        defaultValue: false
     }
 }, {
     sequelize: database_1.default,

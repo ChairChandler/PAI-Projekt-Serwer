@@ -17,7 +17,9 @@ const user_1 = __importDefault(require("models/user"));
 const contestants_1 = __importDefault(require("models/contestants"));
 const logo_1 = __importDefault(require("models/logo"));
 const database_1 = __importDefault(require("static/database"));
-const my_error_1 = __importDefault(require("misc/my-error"));
+const node_schedule_1 = __importDefault(require("node-schedule"));
+const ladder_1 = require("services/ladder");
+const jobs_storage_1 = __importDefault(require("misc/jobs-storage"));
 function getTournamentList(body) {
     return __awaiter(this, void 0, void 0, function* () {
         try {
@@ -29,7 +31,7 @@ function getTournamentList(body) {
                 */
                 tournaments = tournaments.slice(0, body.amount);
             }
-            return tournaments.map(v => ({ id: v.id, name: v.tournament_name, date: v.datetime }));
+            return tournaments.map(v => ({ id: v.id, name: v.tournament_name, date: v.datetime, finished: v.finished }));
         }
         catch (err) {
             console.error(err);
@@ -75,6 +77,7 @@ function getTournamentInfo(body) {
 exports.getTournamentInfo = getTournamentInfo;
 function createTournament(body, id) {
     return __awaiter(this, void 0, void 0, function* () {
+        let job;
         const t = yield database_1.default.transaction();
         try {
             const tournament = yield tournament_1.default.create({
@@ -90,10 +93,13 @@ function createTournament(body, id) {
             for (const logo of body.logos) {
                 yield logo_1.default.create({ tournament_id: tournament.id, logo: logo.data }, { transaction: t });
             }
+            job = node_schedule_1.default.scheduleJob(body.datetime, () => ladder_1.shuffleTournament(tournament.id));
+            jobs_storage_1.default.setJob(tournament.id, job);
             yield t.commit();
         }
         catch (err) {
             yield t.rollback();
+            job.cancel();
             console.error(err);
             return err;
         }
@@ -106,7 +112,13 @@ function modifyTournament(body, id) {
         try {
             const tournament = yield tournament_1.default.findOne({ where: { id: body.tournament_id } });
             if (tournament.owner_id != id) {
-                throw new my_error_1.default('unauthorized access to modify protected data');
+                throw Error('unauthorized access to modify protected data');
+            }
+            else if (tournament.finished) {
+                throw Error('cannot modify finished tournament');
+            }
+            else if (tournament.datetime.getOnlyDate().getTime() < new Date().getOnlyDate().getTime()) {
+                throw Error('cannot modify when tournament started');
             }
             const { tournament_name = tournament.tournament_name, description = tournament.description, datetime = tournament.datetime, localization_lat = tournament.localization_lat, localization_lng = tournament.localization_lng, participants_limit = tournament.participants_limit, joining_deadline = tournament.joining_deadline, } = body;
             // can be done using interleave, however i dont know if sequelize can handle with rollback for many tables
@@ -133,6 +145,9 @@ function modifyTournament(body, id) {
                         yield logo_1.default.create({ tournament_id: body.tournament_id, logo: l.data }, { transaction: t });
                     }
                 }
+            }
+            if (tournament.datetime != datetime) {
+                jobs_storage_1.default.reschedule(tournament.id, datetime);
             }
             yield t.commit();
         }

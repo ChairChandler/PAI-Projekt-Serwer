@@ -3,7 +3,6 @@ import Tournament from 'models/tournament'
 import User from 'models/user'
 import * as API from 'api/contestants'
 import db from 'static/database'
-import MyError from 'misc/my-error'
 
 export async function createContestant(body: API.TOURNAMENT.CONTESTANTS.POST.INPUT, id: number): Promise<void | Error> {
     const t = await db.transaction()
@@ -15,9 +14,9 @@ export async function createContestant(body: API.TOURNAMENT.CONTESTANTS.POST.INP
         if (tinfo.finished) {
             throw new Error('cannot join to finished tournament')
         } else if (tinfo.current_contestants_amount == tinfo.participants_limit) {
-            throw new MyError('reached maximum participants limit')
+            throw Error('reached maximum participants limit')
         } else if (now >= tinfo.datetime.getOnlyDate().getTime() || now >= tinfo.joining_deadline.getOnlyDate().getTime()) {
-            throw new MyError('exceeded joining deadline')
+            throw Error('exceeded joining deadline')
         }
 
         await Promise.all([

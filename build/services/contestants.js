@@ -16,18 +16,20 @@ const contestants_1 = __importDefault(require("models/contestants"));
 const tournament_1 = __importDefault(require("models/tournament"));
 const user_1 = __importDefault(require("models/user"));
 const database_1 = __importDefault(require("static/database"));
-const my_error_1 = __importDefault(require("misc/my-error"));
 function createContestant(body, id) {
     return __awaiter(this, void 0, void 0, function* () {
         const t = yield database_1.default.transaction();
         try {
             const now = new Date().getOnlyDate().getTime();
             const tinfo = yield tournament_1.default.findOne({ where: { id: body.tournament_id } });
-            if (tinfo.current_contestants_amount == tinfo.participants_limit) {
-                throw new my_error_1.default('reached maximum participants limit');
+            if (tinfo.finished) {
+                throw new Error('cannot join to finished tournament');
+            }
+            else if (tinfo.current_contestants_amount == tinfo.participants_limit) {
+                throw Error('reached maximum participants limit');
             }
             else if (now >= tinfo.datetime.getOnlyDate().getTime() || now >= tinfo.joining_deadline.getOnlyDate().getTime()) {
-                throw new my_error_1.default('exceeded joining deadline');
+                throw Error('exceeded joining deadline');
             }
             yield Promise.all([
                 contestants_1.default.create({
@@ -56,12 +58,11 @@ function getContestants(body, id) {
             let data;
             const tournament = yield tournament_1.default.findOne({ where: { id: body.tournament_id } });
             if (tournament.owner_id === id) {
-                data = [];
                 const contestants = yield contestants_1.default.findAll({ where: { tournament_id: body.tournament_id } });
-                for (const c of contestants) {
-                    const { name, lastname } = yield user_1.default.findOne({ where: { id: c.user_id } });
-                    data.push({ user_id: c.user_id, name, lastname });
-                }
+                data = yield Promise.all(contestants.map(({ user_id }) => __awaiter(this, void 0, void 0, function* () {
+                    const { name, lastname } = yield user_1.default.findOne({ where: { id: user_id } });
+                    return { user_id, name, lastname };
+                })));
             }
             else { // not owner, asking if taking part in tournament
                 const contestant = yield contestants_1.default.findOne({ where: { user_id: id, tournament_id: body.tournament_id } });

@@ -51,6 +51,10 @@ Contestant.init({
     node_id: {
         type: SQL.INTEGER.UNSIGNED,
         defaultValue: null
+    },
+    defeated: {
+        type: SQL.BOOLEAN,
+        defaultValue: false
     }
 }, {
     sequelize: database_1.default,

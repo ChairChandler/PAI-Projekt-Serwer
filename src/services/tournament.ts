@@ -4,7 +4,6 @@ import Contestants from 'models/contestants'
 import * as API from 'api/tournament'
 import Logo from 'models/logo'
 import db from 'static/database'
-import MyError from 'misc/my-error'
 import Schedule from 'node-schedule'
 import { shuffleTournament } from 'services/ladder'
 import JobStorage from 'misc/jobs-storage'
@@ -99,11 +98,11 @@ export async function modifyTournament(body: API.TOURNAMENT.INFO.PUT.INPUT, id: 
     try {
         const tournament = await Tournament.findOne({ where: { id: body.tournament_id } })
         if (tournament.owner_id != id) {
-            throw new MyError('unauthorized access to modify protected data')
+            throw Error('unauthorized access to modify protected data')
         } else if(tournament.finished) {
-            throw new Error('cannot modify finished tournament')
+            throw Error('cannot modify finished tournament')
         } else if(tournament.datetime.getOnlyDate().getTime() < new Date().getOnlyDate().getTime()) {
-            throw new Error('cannot modify when tournament started')
+            throw Error('cannot modify when tournament started')
         }
 
         const {

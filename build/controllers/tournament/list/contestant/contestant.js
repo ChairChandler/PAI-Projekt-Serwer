@@ -16,7 +16,6 @@ const express_1 = __importDefault(require("express"));
 const http_status_codes_1 = __importDefault(require("http-status-codes"));
 const token_middleware_1 = require("middlewares/token-middleware");
 const tournament_1 = require("services/tournament");
-const my_error_1 = __importDefault(require("misc/my-error"));
 const router = express_1.default.Router();
 router.route('/contestant')
     .get(token_middleware_1.TokenMiddleware(), (req, res) => __awaiter(void 0, void 0, void 0, function* () {
@@ -25,7 +24,7 @@ router.route('/contestant')
         res.status(http_status_codes_1.default.OK).send(data);
     }
     else {
-        res.status(http_status_codes_1.default.NOT_FOUND).send(data instanceof my_error_1.default ? data.message : 'cannot retrieve contestant future tournaments list');
+        res.status(http_status_codes_1.default.NOT_FOUND).send(data instanceof Error ? data.message : 'cannot retrieve contestant future tournaments list');
     }
 }));
 exports.default = router;

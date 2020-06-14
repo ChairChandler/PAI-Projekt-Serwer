@@ -2,7 +2,6 @@ import express, { Request, Response } from 'express'
 import HttpCode from 'http-status-codes'
 import { getTournamentInfo, createTournament, modifyTournament } from 'services/tournament'
 import { TokenMiddleware } from 'middlewares/token-middleware'
-import MyError from 'misc/my-error'
 
 const router = express.Router()
 
@@ -12,7 +11,7 @@ router.route('/info')
     if(!(data instanceof Error)) {
         res.status(HttpCode.OK).send(data)
     } else {
-        res.status(HttpCode.NOT_FOUND).send(data instanceof MyError ? data.message : 'cannot retrieve tournaments info')
+        res.status(HttpCode.NOT_FOUND).send(data instanceof Error ? data.message : 'cannot retrieve tournaments info')
     }
 })
 .put(TokenMiddleware(), async (req: Request, res: Response) => { // modify selected tournament details
@@ -20,7 +19,7 @@ router.route('/info')
     if(!err) {
         res.sendStatus(HttpCode.NO_CONTENT)
     } else {
-        res.status(HttpCode.INTERNAL_SERVER_ERROR).send(err instanceof MyError ? err.message : 'cannot modify tournament info')
+        res.status(HttpCode.INTERNAL_SERVER_ERROR).send(err instanceof Error ? err.message : 'cannot modify tournament info')
     }
 })
 .post(TokenMiddleware(), async(req: Request, res: Response) => { // create new tournament
@@ -28,7 +27,7 @@ router.route('/info')
     if(!err) {
         res.sendStatus(HttpCode.NO_CONTENT)
     } else {
-        res.status(HttpCode.INTERNAL_SERVER_ERROR).send(err instanceof MyError ? err.message : 'cannot create new tournament')
+        res.status(HttpCode.INTERNAL_SERVER_ERROR).send(err instanceof Error ? err.message : 'cannot create new tournament')
     }
 })
 

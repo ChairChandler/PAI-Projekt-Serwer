@@ -17,7 +17,6 @@ const smtp_1 = __importDefault(require("static/smtp"));
 const user_1 = __importDefault(require("models/user"));
 const server_json_1 = __importDefault(require("config/server.json"));
 const database_1 = __importDefault(require("static/database"));
-const my_error_1 = __importDefault(require("misc/my-error"));
 const bcrypt_1 = __importDefault(require("bcrypt"));
 const generate_keys_1 = require("init/generate-keys");
 function signUp(body) {
@@ -55,10 +54,10 @@ function verify(body) {
                 }
             });
             if (!data) {
-                throw new my_error_1.default("user not found");
+                throw Error("user not found");
             }
-            if (data.registered) {
-                throw new my_error_1.default("user has been registered before");
+            else if (data.registered) {
+                throw Error("user has been registered before");
             }
             yield data.update({ registered: true }, { transaction: t });
             t.commit();
