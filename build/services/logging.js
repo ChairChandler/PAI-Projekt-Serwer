@@ -67,17 +67,23 @@ function remindPassword(body) {
             if (!user) {
                 throw new my_error_1.default("invalid email");
             }
-            yield user.update({ forgot_password: true }, { transaction: t });
+            const token = crypto_1.default.randomBytes(64).toString('hex');
+            yield user.update({ forgot_password_token: token }, { transaction: t });
             yield smtp_1.default.sendMail({
                 from: smtp_json_1.default.from,
                 to: body.email,
                 subject: "Create new password",
                 html: `
-                <form method="post" action="http://${server_json_1.default.ip}:${server_json_1.default.port}/user/login/reset">
+                <form action="http://${server_json_1.default.ip}:${server_json_1.default.port}/user/login/reset" method="post">
+                    <input type="hidden" value="${token}" name="token">
                     <input type="hidden" value="${body.email}" name="email">
-                    <label for="password">Password</label>
-                    <input type="password" id="password" name="password">
-                    <input type="submit" value="Submit">
+                    <div>
+                    	<label for="password">Password</label>
+                    	<input required type="password" id="password" name="password">
+                    </div>
+                    <div>
+                    	<input type="submit" value="Submit">
+                    </div>
                 </form>
             `
             });
@@ -96,14 +102,17 @@ function changePassword(body) {
         const t = yield database_1.default.transaction();
         try {
             const user = yield user_1.default.findOne({ where: { email: body.email } });
-            if (!user.forgot_password) {
+            if (!user.forgot_password_token) {
                 throw new my_error_1.default("user hasn't requested a password change");
             }
             else if (body.password.length < 8 || body.password.length > 16) {
                 throw new Error('password must be between 8 and 16 characters');
             }
+            else if (body.token !== user.forgot_password_token) {
+                throw new Error('invalid reset token');
+            }
             const hash = bcrypt_1.default.hashSync(body.password, server_json_1.default.saltRounds);
-            yield user.update({ password: hash, forgot_password: false }, { transaction: t });
+            yield user.update({ password: hash, forgot_password_token: null }, { transaction: t });
             t.commit();
         }
         catch (err) {

@@ -48,7 +48,7 @@ function getTournamentInfo(body) {
             for (const img of logos) {
                 imgData.push({
                     id: img.id,
-                    data: img.logo
+                    data: img.logo.toString('utf-8')
                 });
             }
             return {
@@ -88,7 +88,7 @@ function createTournament(body, id) {
                 joining_deadline: body.joining_deadline
             }, { transaction: t });
             for (const logo of body.logos) {
-                yield logo_1.default.create({ tournament_id: tournament.id, logo });
+                yield logo_1.default.create({ tournament_id: tournament.id, logo: logo.data }, { transaction: t });
             }
             yield t.commit();
         }
@@ -157,7 +157,7 @@ function getTournamentsInfoForContestant(id) {
                 for (const img of logos) {
                     imgData.push({
                         id: img.id,
-                        data: img.logo
+                        data: img.logo.toString('utf-8')
                     });
                 }
                 response_data.push({

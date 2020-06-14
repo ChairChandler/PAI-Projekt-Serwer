@@ -37,7 +37,7 @@ User.init({
         validate: { isEmail: true }
     },
     password: {
-        type: SQL.TEXT({ length: 'long' }),
+        type: SQL.TEXT({ length: 'medium' }),
         allowNull: false
     },
     registered: {
@@ -45,10 +45,9 @@ User.init({
         allowNull: false,
         defaultValue: false
     },
-    forgot_password: {
-        type: SQL.BOOLEAN,
-        allowNull: false,
-        defaultValue: false
+    forgot_password_token: {
+        type: SQL.TEXT({ length: 'medium' }),
+        defaultValue: null
     }
 }, {
     sequelize: database_1.default,

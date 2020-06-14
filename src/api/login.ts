@@ -19,6 +19,7 @@ export namespace USER.LOGIN.GET {
 // POST USER/LOGIN/RESET
 export namespace USER.LOGIN.RESET.POST {
     export interface INPUT {
+        token: string,
         email: string,
         password: string
     }

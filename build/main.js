@@ -42,8 +42,8 @@ function main() {
         app.use(cors_1.default({ origin: `http://${client_json_1.default.ip}:${client_json_1.default.port}`, credentials: true }));
         app.use(access_log_middleware_1.AccessLog());
         app.use(cookie_parser_1.default());
-        app.use(express_1.default.urlencoded({ extended: true }));
-        app.use(express_1.default.json());
+        app.use(express_1.default.urlencoded({ limit: '50mb', extended: true }));
+        app.use(express_1.default.json({ limit: '50mb' }));
         app.use(query_params_middleware_1.QueryParamsToJson());
         app.use(controller_1.default);
         app.use('/public-key', public_key_middleware_1.PublicKey());

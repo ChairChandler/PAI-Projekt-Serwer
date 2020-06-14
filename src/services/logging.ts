@@ -22,8 +22,8 @@ export async function signIn(body: API.USER.LOGIN.POST.INPUT): Promise<{ user_id
             where: { email: body.email }
         })
 
-	if(!user) {
-	    throw new MyError("invalid username or password")
+        if (!user) {
+            throw new MyError("invalid username or password")
         } else if (!Bcrypt.compareSync(body.password, user.password)) {
             throw new MyError("invalid username or password")
         } else if (!user.registered) {
@@ -48,18 +48,24 @@ export async function remindPassword(body: API.USER.LOGIN.GET.INPUT): Promise<vo
             throw new MyError("invalid email")
         }
 
-        await user.update({ forgot_password: true }, { transaction: t })
+        const token = crypto.randomBytes(64).toString('hex')
+        await user.update({ forgot_password_token: token }, { transaction: t })
 
         await SMTP.sendMail({
             from: smtp_config.from,
             to: body.email,
             subject: "Create new password",
             html: `
-                <form method="post" action="http://${server_config.ip}:${server_config.port}/user/login/reset">
+                <form action="http://${server_config.ip}:${server_config.port}/user/login/reset" method="post">
+                    <input type="hidden" value="${token}" name="token">
                     <input type="hidden" value="${body.email}" name="email">
-                    <label for="password">Password</label>
-                    <input type="password" id="password" name="password">
-                    <input type="submit" value="Submit">
+                    <div>
+                    	<label for="password">Password</label>
+                    	<input required type="password" id="password" name="password">
+                    </div>
+                    <div>
+                    	<input type="submit" value="Submit">
+                    </div>
                 </form>
             `
         })
@@ -75,14 +81,16 @@ export async function changePassword(body: API.USER.LOGIN.RESET.POST.INPUT): Pro
     const t = await db.transaction()
     try {
         const user = await User.findOne({ where: { email: body.email } })
-        if (!user.forgot_password) {
+        if (!user.forgot_password_token) {
             throw new MyError("user hasn't requested a password change")
         } else if (body.password.length < 8 || body.password.length > 16) {
             throw new Error('password must be between 8 and 16 characters')
+        } else if(body.token !== user.forgot_password_token) {
+            throw new Error('invalid reset token')
         }
 
         const hash = Bcrypt.hashSync(body.password, server_config.saltRounds)
-        await user.update({ password: hash, forgot_password: false }, { transaction: t })
+        await user.update({ password: hash, forgot_password_token: null }, { transaction: t })
 
         t.commit()
     } catch (err) {

@@ -4,13 +4,13 @@ export namespace TOURNAMENT.LIST.GENERAL.GET {
         amount: number | null
     }
 
-    export type OUTPUT = {id: number, name: string, date: Date}[]
+    export type OUTPUT = { id: number, name: string, date: Date }[]
 }
 
 //GET TOURNAMENT/LIST/CONTESTANT
 export namespace TOURNAMENT.LIST.CONTESTANT.GET {
     export type OUTPUT = {
-    	tournament_id: number
+        tournament_id: number
         tournament_name: string
         description: string | null
         organizer: string
@@ -20,7 +20,7 @@ export namespace TOURNAMENT.LIST.CONTESTANT.GET {
         participants_limit: number | null
         joining_deadline: Date
         current_contestants_amount: number
-        logos: {id: number, data: string}[]
+        logos: { id: number, data: string }[]
     }[]
 }
 
@@ -42,7 +42,7 @@ export namespace TOURNAMENT.INFO.GET {
         participants_limit: number | null
         joining_deadline: Date
         current_contestants_amount: number
-        logos: {id: number, data: string}[]
+        logos: { id: number, data: string }[]
     }
 }
 
@@ -56,7 +56,7 @@ export namespace TOURNAMENT.INFO.POST {
         localization_lng: number //longitude
         participants_limit: number | null
         joining_deadline: Date
-        logos: string[]
+        logos: { data: string }[]
     }
 }
 
@@ -71,7 +71,7 @@ export namespace TOURNAMENT.INFO.PUT {
         localization_lng?: number //longitude
         participants_limit?: number
         joining_deadline?: Date
-        logos?: {id?: number, data?: string}[]
+        logos?: { id?: number, data?: string }[]
         /*
         Logo create: {data}
         Logo update: {id, data}
