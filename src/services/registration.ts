@@ -6,6 +6,7 @@ import db from 'static/database'
 import * as API from 'api/register'
 import Bcrypt from 'bcrypt'
 import { decrypt } from 'init/generate-keys'
+import LogicError from 'misc/logic-error.ts'
 
 export async function signUp(body: API.USER.REGISTER.POST.INPUT): Promise<void | Error> {
     const t = await db.transaction()
@@ -31,7 +32,7 @@ export async function signUp(body: API.USER.REGISTER.POST.INPUT): Promise<void |
     }
 }
 
-export async function verify(body: API.USER.REGISTER.VERIFY.GET.INPUT): Promise<void | Error> {
+export async function verify(body: API.USER.REGISTER.VERIFY.GET.INPUT): Promise<void | Error | LogicError> {
     const t = await db.transaction()
     try {
         const data = await User.findOne({
@@ -42,9 +43,9 @@ export async function verify(body: API.USER.REGISTER.VERIFY.GET.INPUT): Promise<
         })
 
         if (!data) {
-            throw Error("user not found")
+            throw new LogicError("user not found")
         } else if (data.registered) {
-            throw Error("user has been registered before")
+            throw new LogicError("user has been registered before")
         }
 
         await data.update({ registered: true }, { transaction: t })

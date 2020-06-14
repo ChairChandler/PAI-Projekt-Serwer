@@ -79,39 +79,61 @@ function getLadderInfo(body) {
 exports.getLadderInfo = getLadderInfo;
 function setScore(body) {
     return __awaiter(this, void 0, void 0, function* () {
-        const t = yield database_1.default.transaction({ isolationLevel: sequelize_1.Transaction.ISOLATION_LEVELS.SERIALIZABLE });
+        let t = yield database_1.default.transaction({ isolationLevel: sequelize_1.Transaction.ISOLATION_LEVELS.SERIALIZABLE });
         try {
+            const tournament = yield tournament_1.default.findOne({ where: { id: body.tournament_id }, transaction: t });
+            if (tournament.finished) {
+                throw Error('tournament is finished, cannot change position');
+            }
             const contestant = yield contestants_1.default.findOne({
                 where: { tournament_id: body.tournament_id, user_id: body.contestant_id }, transaction: t
             });
             const winnerNode = Math.floor((contestant.node_id - 1) / 2);
-            const enemyOnWinnerPos = yield contestants_1.default.findOne({
-                where: { tournament_id: body.tournament_id, node_id: winnerNode }, transaction: t
+            const enemyLoserNode = 2 * winnerNode + ((Math.floor(contestant.node_id / 2) != winnerNode) ? 1 : 2);
+            const enemy = yield contestants_1.default.findOne({
+                where: {
+                    tournament_id: body.tournament_id,
+                    $or: [
+                        { node_id: { $eq: winnerNode } },
+                        { node_id: { $eq: enemyLoserNode } }
+                    ]
+                }, transaction: t
             });
-            if (enemyOnWinnerPos) {
-                if (body.winner) {
-                    let prevPosition = 2 * enemyOnWinnerPos.node_id + 1;
-                    if (prevPosition == contestant.node_id) {
-                        prevPosition++;
-                    }
-                    enemyOnWinnerPos.update({ node_id: prevPosition });
-                    throw Error('winner-winner conflict');
+            let error;
+            if (enemy) {
+                if (body.winner && enemy.defeated === false) { // WIN-WIN
+                    yield enemy.update({ defeated: null, node_id: enemyLoserNode }, { transaction: t });
+                    error = Error('winner-winner conflict');
                 }
-                else {
-                    yield contestant.update({ defeated: true });
+                else if (body.winner && enemy.defeated) { // WIN-LOSE
+                    yield contestant.update({ defeated: null, node_id: winnerNode }, { transaction: t });
+                }
+                else if (!body.winner && enemy.defeated) { // LOSE-LOSE
+                    yield enemy.update({ defeated: null }, { transaction: t });
+                    error = Error('loser-loser conflict');
+                }
+                else if (!body.winner && !enemy.defeated) { // LOSE-WIN
+                    yield Promise.all([
+                        contestant.update({ defeated: true }, { transaction: t }),
+                        enemy.update({ defeated: null, node_id: winnerNode }, { transaction: t })
+                    ]);
                 }
             }
             else {
-                if (body.winner) {
-                    yield contestant.update({ defeated: false, node_id: winnerNode });
-                }
-                else {
-                    throw Error('');
-                }
+                error = Error('enemy has not played with contestant');
             }
-            t.commit();
+            if (error) {
+                t.commit();
+                t = null;
+                throw error;
+            }
+            else if (!winnerNode) {
+                yield tournament.update({ finished: true }, { transaction: t });
+                t.commit();
+            }
         }
         catch (err) {
+            t === null || t === void 0 ? void 0 : t.rollback();
             console.error(err);
             return err;
         }

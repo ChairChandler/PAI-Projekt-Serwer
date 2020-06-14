@@ -6,7 +6,8 @@ import Logo from 'models/logo'
 import db from 'static/database'
 import Schedule from 'node-schedule'
 import { shuffleTournament } from 'services/ladder'
-import JobStorage from 'misc/jobs-storage'
+import JobStorage from 'static/jobs-storage'
+import LogicError from 'misc/logic-error.ts'
 
 export async function getTournamentList(body: API.TOURNAMENT.LIST.GENERAL.GET.INPUT):
     Promise<API.TOURNAMENT.LIST.GENERAL.GET.OUTPUT | Error> {
@@ -93,16 +94,16 @@ export async function createTournament(body: API.TOURNAMENT.INFO.POST.INPUT, id:
     }
 }
 
-export async function modifyTournament(body: API.TOURNAMENT.INFO.PUT.INPUT, id: number): Promise<void | Error> {
+export async function modifyTournament(body: API.TOURNAMENT.INFO.PUT.INPUT, id: number): Promise<void | Error | LogicError> {
     const t = await db.transaction()
     try {
         const tournament = await Tournament.findOne({ where: { id: body.tournament_id } })
         if (tournament.owner_id != id) {
-            throw Error('unauthorized access to modify protected data')
+            throw new LogicError('unauthorized access to modify protected data')
         } else if(tournament.finished) {
-            throw Error('cannot modify finished tournament')
+            throw new LogicError('cannot modify finished tournament')
         } else if(tournament.datetime.getOnlyDate().getTime() < new Date().getOnlyDate().getTime()) {
-            throw Error('cannot modify when tournament started')
+            throw new LogicError('cannot modify when tournament started')
         }
 
         const {

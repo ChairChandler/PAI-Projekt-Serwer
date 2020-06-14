@@ -8,13 +8,14 @@ import crypto from 'crypto'
 import * as API from 'api/login'
 import Bcrypt from 'bcrypt'
 import { decrypt } from 'init/generate-keys'
+import LogicError from 'misc/logic-error.ts'
 
-export async function signIn(body: API.USER.LOGIN.POST.INPUT): Promise<{ user_id: number, token: string, expiresIn: number } | Error> {
+export async function signIn(body: API.USER.LOGIN.POST.INPUT): Promise<{ user_id: number, token: string, expiresIn: number } | Error | LogicError> {
     try {
         body.password = decrypt(body.password)
 
         if (body.password.length < 8 || body.password.length > 16) {
-            throw new Error('password must be between 8 and 16 characters')
+            throw new LogicError('password must be between 8 and 16 characters')
         }
 
         const user = await User.findOne({
@@ -22,11 +23,11 @@ export async function signIn(body: API.USER.LOGIN.POST.INPUT): Promise<{ user_id
         })
 
         if (!user) {
-            throw Error("invalid username or password")
+            throw new LogicError("invalid username or password")
         } else if (!Bcrypt.compareSync(body.password, user.password)) {
-            throw Error("invalid username or password")
+            throw new LogicError("invalid username or password")
         } else if (!user.registered) {
-            throw Error("user hasn't finished registration")
+            throw new LogicError("user hasn't finished registration")
         }
 
         const id = crypto.randomBytes(64).toString('hex')
@@ -38,13 +39,13 @@ export async function signIn(body: API.USER.LOGIN.POST.INPUT): Promise<{ user_id
     }
 }
 
-export async function remindPassword(body: API.USER.LOGIN.GET.INPUT): Promise<void | Error> {
+export async function remindPassword(body: API.USER.LOGIN.GET.INPUT): Promise<void | Error | LogicError> {
     const t = await db.transaction()
 
     try {
         let user = await User.findOne({ where: { email: body.email } })
         if (!user) {
-            throw Error("invalid email")
+            throw new LogicError("invalid email")
         }
 
         const token = crypto.randomBytes(64).toString('hex')
@@ -76,16 +77,16 @@ export async function remindPassword(body: API.USER.LOGIN.GET.INPUT): Promise<vo
     }
 }
 
-export async function changePassword(body: API.USER.LOGIN.RESET.POST.INPUT): Promise<void | Error> {
+export async function changePassword(body: API.USER.LOGIN.RESET.POST.INPUT): Promise<void | Error | LogicError> {
     const t = await db.transaction()
     try {
         const user = await User.findOne({ where: { email: body.email } })
         if (!user.forgot_password_token) {
-            throw Error("user hasn't requested a password change")
+            throw new LogicError("user hasn't requested a password change")
         } else if (body.password.length < 8 || body.password.length > 16) {
-            throw Error('password must be between 8 and 16 characters')
+            throw new LogicError('password must be between 8 and 16 characters')
         } else if(body.token !== user.forgot_password_token) {
-            throw Error('invalid reset token')
+            throw new LogicError('invalid reset token')
         }
 
         const hash = Bcrypt.hashSync(body.password, server_config.saltRounds)

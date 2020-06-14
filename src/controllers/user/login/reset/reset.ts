@@ -1,6 +1,7 @@
 import express, { Request, Response} from 'express'
 import HttpCode from 'http-status-codes'
 import { changePassword } from 'services/logging'
+import LogicError from 'misc/logic-error.ts'
 
 const router = express.Router()
 
@@ -11,7 +12,7 @@ router.route('/reset')
     if(!err) {
         res.sendStatus(HttpCode.NO_CONTENT)
     } else {
-        res.status(HttpCode.INTERNAL_SERVER_ERROR).send(err instanceof Error ? err.message : 'cannot change password')
+        res.status(HttpCode.INTERNAL_SERVER_ERROR).send(err instanceof LogicError ? err.message : 'cannot change password')
     }
 })
 

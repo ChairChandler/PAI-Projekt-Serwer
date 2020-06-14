@@ -2,6 +2,7 @@ import express, { Request, Response } from 'express'
 import HttpCode from 'http-status-codes'
 import { getTournamentInfo, createTournament, modifyTournament } from 'services/tournament'
 import { TokenMiddleware } from 'middlewares/token-middleware'
+import LogicError from 'misc/logic-error.ts'
 
 const router = express.Router()
 
@@ -19,7 +20,7 @@ router.route('/info')
     if(!err) {
         res.sendStatus(HttpCode.NO_CONTENT)
     } else {
-        res.status(HttpCode.INTERNAL_SERVER_ERROR).send(err instanceof Error ? err.message : 'cannot modify tournament info')
+        res.status(HttpCode.INTERNAL_SERVER_ERROR).send(err instanceof LogicError ? err.message : 'cannot modify tournament info')
     }
 })
 .post(TokenMiddleware(), async(req: Request, res: Response) => { // create new tournament

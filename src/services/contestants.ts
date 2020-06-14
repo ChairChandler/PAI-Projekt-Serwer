@@ -3,8 +3,9 @@ import Tournament from 'models/tournament'
 import User from 'models/user'
 import * as API from 'api/contestants'
 import db from 'static/database'
+import LogicError from 'misc/logic-error.ts'
 
-export async function createContestant(body: API.TOURNAMENT.CONTESTANTS.POST.INPUT, id: number): Promise<void | Error> {
+export async function createContestant(body: API.TOURNAMENT.CONTESTANTS.POST.INPUT, id: number): Promise<void | Error | LogicError> {
     const t = await db.transaction()
 
     try {
@@ -12,11 +13,11 @@ export async function createContestant(body: API.TOURNAMENT.CONTESTANTS.POST.INP
         const tinfo = await Tournament.findOne({ where: { id: body.tournament_id } })
 
         if (tinfo.finished) {
-            throw new Error('cannot join to finished tournament')
+            throw new LogicError('cannot join to finished tournament')
         } else if (tinfo.current_contestants_amount == tinfo.participants_limit) {
-            throw Error('reached maximum participants limit')
+            throw new LogicError('reached maximum participants limit')
         } else if (now >= tinfo.datetime.getOnlyDate().getTime() || now >= tinfo.joining_deadline.getOnlyDate().getTime()) {
-            throw Error('exceeded joining deadline')
+            throw new LogicError('exceeded joining deadline')
         }
 
         await Promise.all([

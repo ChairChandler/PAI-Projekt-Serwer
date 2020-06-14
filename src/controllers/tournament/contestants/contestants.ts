@@ -2,6 +2,7 @@ import express, { Request, Response}from 'express'
 import HttpCode from 'http-status-codes'
 import { TokenMiddleware } from 'middlewares/token-middleware'
 import { createContestant, getContestants } from 'services/contestants'
+import LogicError from 'misc/logic-error.ts'
 
 const router = express.Router()
 
@@ -11,7 +12,7 @@ router.route('/contestants')
     if(!err) {
         res.sendStatus(HttpCode.NO_CONTENT)
     } else {
-        res.status(HttpCode.INTERNAL_SERVER_ERROR).send(err instanceof Error ? err.message : 'cannot join to the tournament')
+        res.status(HttpCode.INTERNAL_SERVER_ERROR).send(err instanceof LogicError ? err.message : 'cannot join to the tournament')
     }
 })
 .get(TokenMiddleware(), async (req: Request, res: Response) => { // get tournament contestants list
@@ -19,7 +20,7 @@ router.route('/contestants')
     if(!(data instanceof Error)) {
         res.status(HttpCode.OK).send(data)
     } else {
-        res.status(HttpCode.UNAUTHORIZED).send(data instanceof Error ? data.message : 'cannot retrieve tournament contestants list')
+        res.status(HttpCode.UNAUTHORIZED).send('cannot retrieve tournament contestants list')
     }
 })
 
