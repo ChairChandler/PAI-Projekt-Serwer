@@ -44,9 +44,7 @@ export async function verify(body: API.USER.REGISTER.VERIFY.GET.INPUT): Promise<
 
         if (!data) {
             throw new MyError("user not found")
-        }
-
-        if (data.registered) {
+        } else if (data.registered) {
             throw new MyError("user has been registered before")
         }
 

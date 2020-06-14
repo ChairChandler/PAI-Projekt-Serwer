@@ -5,6 +5,9 @@ import * as API from 'api/tournament'
 import Logo from 'models/logo'
 import db from 'static/database'
 import MyError from 'misc/my-error'
+import Schedule from 'node-schedule'
+import { shuffleTournament } from 'services/ladder'
+import JobStorage from 'misc/jobs-storage'
 
 export async function getTournamentList(body: API.TOURNAMENT.LIST.GENERAL.GET.INPUT):
     Promise<API.TOURNAMENT.LIST.GENERAL.GET.OUTPUT | Error> {
@@ -18,7 +21,7 @@ export async function getTournamentList(body: API.TOURNAMENT.LIST.GENERAL.GET.IN
             tournaments = tournaments.slice(0, body.amount)
         }
 
-        return tournaments.map(v => ({ id: v.id, name: v.tournament_name, date: v.datetime }))
+        return tournaments.map(v => ({ id: v.id, name: v.tournament_name, date: v.datetime, finished: v.finished }))
     } catch (err) {
         console.error(err)
         return err
@@ -60,6 +63,7 @@ export async function getTournamentInfo(body: API.TOURNAMENT.INFO.GET.INPUT):
 }
 
 export async function createTournament(body: API.TOURNAMENT.INFO.POST.INPUT, id: number): Promise<void | Error> {
+    let job: Schedule.Job
     const t = await db.transaction()
     try {
         const tournament = await Tournament.create({
@@ -77,9 +81,14 @@ export async function createTournament(body: API.TOURNAMENT.INFO.POST.INPUT, id:
             await Logo.create({ tournament_id: tournament.id, logo: logo.data }, { transaction: t })
         }
 
+        job = Schedule.scheduleJob(body.datetime, () => shuffleTournament(tournament.id))
+
+        JobStorage.setJob(tournament.id, job)
+
         await t.commit()
     } catch (err) {
         await t.rollback()
+        job.cancel()
         console.error(err)
         return err
     }
@@ -91,6 +100,10 @@ export async function modifyTournament(body: API.TOURNAMENT.INFO.PUT.INPUT, id: 
         const tournament = await Tournament.findOne({ where: { id: body.tournament_id } })
         if (tournament.owner_id != id) {
             throw new MyError('unauthorized access to modify protected data')
+        } else if(tournament.finished) {
+            throw new Error('cannot modify finished tournament')
+        } else if(tournament.datetime.getOnlyDate().getTime() < new Date().getOnlyDate().getTime()) {
+            throw new Error('cannot modify when tournament started')
         }
 
         const {
@@ -127,6 +140,10 @@ export async function modifyTournament(body: API.TOURNAMENT.INFO.PUT.INPUT, id: 
                     await Logo.create({ tournament_id: body.tournament_id, logo: l.data }, { transaction: t })
                 }
             }
+        }
+
+        if(tournament.datetime != datetime) {
+            JobStorage.reschedule(tournament.id, datetime)
         }
 
         await t.commit()

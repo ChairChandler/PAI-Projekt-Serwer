@@ -2,7 +2,7 @@ import crypto from 'crypto'
 
 let keys: { privateKey: string, publicKey: string }
 
-export default function generateKeys(callback: () => void) {
+export default async function generateKeys() {
     keys = crypto.generateKeyPairSync('rsa', {
         modulusLength: 4096,
         publicKeyEncoding: {
@@ -16,8 +16,6 @@ export default function generateKeys(callback: () => void) {
             passphrase: ''
         }
     })
-
-    callback()
 }
 
 export function decrypt(val: string) {

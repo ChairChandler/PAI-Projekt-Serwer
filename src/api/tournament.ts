@@ -4,7 +4,7 @@ export namespace TOURNAMENT.LIST.GENERAL.GET {
         amount: number | null
     }
 
-    export type OUTPUT = { id: number, name: string, date: Date }[]
+    export type OUTPUT = { id: number, name: string, date: Date, finished: boolean }[]
 }
 
 //GET TOURNAMENT/LIST/CONTESTANT

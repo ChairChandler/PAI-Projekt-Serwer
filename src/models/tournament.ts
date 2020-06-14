@@ -13,6 +13,7 @@ class Tournament extends SQL.Model {
     public participants_limit: number | null
     public joining_deadline: Date
     public current_contestants_amount: number
+    public finished: boolean
 
     public readonly createdAt: Date
     public readonly updatedAt: Date
@@ -87,6 +88,10 @@ Tournament.init({
         type: SQL.INTEGER.UNSIGNED,
         allowNull: false,
         defaultValue: 0
+    },
+    finished: {
+        type: SQL.BOOLEAN,
+        defaultValue: false
     }
 }, {
     sequelize: db,
