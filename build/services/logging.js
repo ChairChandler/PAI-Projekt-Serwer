@@ -39,8 +39,10 @@ function signIn(body) {
             const user = yield user_1.default.findOne({
                 where: { email: body.email }
             });
-            if (!(user && bcrypt_1.default.compareSync(body.password, user.password))) {
-                console.log(body.password, user.password);
+            if (!user) {
+                throw new my_error_1.default("invalid username or password");
+            }
+            else if (!bcrypt_1.default.compareSync(body.password, user.password)) {
                 throw new my_error_1.default("invalid username or password");
             }
             else if (!user.registered) {

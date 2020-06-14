@@ -20,7 +20,7 @@ export namespace TOURNAMENT.LIST.CONTESTANT.GET {
         participants_limit: number | null
         joining_deadline: Date
         current_contestants_amount: number
-        logos: {id: number, data: Blob}[]
+        logos: {id: number, data: string}[]
     }[]
 }
 
@@ -42,7 +42,7 @@ export namespace TOURNAMENT.INFO.GET {
         participants_limit: number | null
         joining_deadline: Date
         current_contestants_amount: number
-        logos: {id: number, data: Blob}[]
+        logos: {id: number, data: string}[]
     }
 }
 
@@ -56,7 +56,7 @@ export namespace TOURNAMENT.INFO.POST {
         localization_lng: number //longitude
         participants_limit: number | null
         joining_deadline: Date
-        logos: {id: number, data: Blob}[]
+        logos: string[]
     }
 }
 
@@ -64,13 +64,18 @@ export namespace TOURNAMENT.INFO.POST {
 export namespace TOURNAMENT.INFO.PUT {
     export interface INPUT {
         tournament_id: number
-        tournament_name: string | undefined
-        description: string | undefined
-        datetime: Date | undefined
-        localization_lat: number | undefined //latitude
-        localization_lng: number | undefined //longitude
-        participants_limit: number | undefined
-        joining_deadline: Date | undefined
-        logos: {id: number | undefined, data: Blob}[] | undefined
+        tournament_name?: string
+        description?: string
+        datetime?: Date
+        localization_lat?: number //latitude
+        localization_lng?: number //longitude
+        participants_limit?: number
+        joining_deadline?: Date
+        logos?: {id?: number, data?: string}[]
+        /*
+        Logo create: {data}
+        Logo update: {id, data}
+        Logo remove: {id} 
+        */
     }
 }

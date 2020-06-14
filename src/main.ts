@@ -5,13 +5,14 @@ import client from 'config/client.json'
 import models_init from 'init/tables'
 import { QueryParamsToJson } from 'middlewares/query-params-middleware'
 import { AccessLog } from 'middlewares/access-log-middleware'
-import { PublicKey } from 'middlewares/public-key'
+import { PublicKey } from 'middlewares/public-key-middleware'
 import cookieparser from 'cookie-parser'
 import { shuffleContestants } from 'services/ladder'
 import * as time from 'time-convert'
 import 'init/date'
 import cors from 'cors'
 import generateKeys from 'init/generate-keys'
+import Ping from 'middlewares/ping-middleware'
 
 generateKeys(main)
 
@@ -27,6 +28,7 @@ async function main() {
     app.use(QueryParamsToJson())
     app.use(endpoints)
     app.use('/public-key', PublicKey())
+    app.use('/', Ping)
 
     setInterval(async () => {
         const err = await shuffleContestants()

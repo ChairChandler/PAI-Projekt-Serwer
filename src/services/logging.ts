@@ -22,8 +22,9 @@ export async function signIn(body: API.USER.LOGIN.POST.INPUT): Promise<{ user_id
             where: { email: body.email }
         })
 
-        if (!(user && Bcrypt.compareSync(body.password, user.password))) {
-            console.log(body.password, user.password)
+	if(!user) {
+	    throw new MyError("invalid username or password")
+        } else if (!Bcrypt.compareSync(body.password, user.password)) {
             throw new MyError("invalid username or password")
         } else if (!user.registered) {
             throw new MyError("user hasn't finished registration")

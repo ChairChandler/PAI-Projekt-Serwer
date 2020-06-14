@@ -104,6 +104,7 @@ export async function modifyTournament(body: API.TOURNAMENT.INFO.PUT.INPUT, id: 
         } = body
 
 
+        // can be done using interleave, however i dont know if sequelize can handle with rollback for many tables
         await tournament.update({
             tournament_name, 
             description, 
@@ -116,9 +117,13 @@ export async function modifyTournament(body: API.TOURNAMENT.INFO.PUT.INPUT, id: 
 
         if(body.logos) {
             for(const l of body.logos) {
-                if(l.id) {
-                    await Logo.update({logo: l.data}, {where: {id: l.id}, transaction: t})
-                } else {
+                if(l.id) { // UPDATE OR REMOVE
+                    if(l.data) { // UPDATE
+                        await Logo.update({logo: l.data}, {where: {id: l.id}, transaction: t})
+                    } else { // REMOVE
+                        await Logo.destroy({where: {id: l.id}, transaction: t})
+                    }
+                } else { // CREATE
                     await Logo.create({tournament_id: body.tournament_id, logo: l.data}, {transaction: t})
                 }
             }

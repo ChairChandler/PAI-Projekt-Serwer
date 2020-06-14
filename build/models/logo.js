@@ -32,7 +32,7 @@ Logo.init({
         onUpdate: 'CASCADE'
     },
     logo: {
-        type: SQL.BLOB({ length: 'long' }),
+        type: SQL.TEXT({ length: 'medium' }),
         allowNull: false
     }
 }, {

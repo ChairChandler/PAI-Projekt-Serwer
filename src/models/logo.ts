@@ -5,7 +5,7 @@ import Tournament from 'models/tournament'
 class Logo extends SQL.Model {
     public id: number
     public tournament_id: number
-    public logo: Blob
+    public logo: string
 
     public readonly createdAt: Date
     public readonly updatedAt: Date
@@ -28,7 +28,7 @@ Logo.init({
         onUpdate: 'CASCADE'
     },
     logo: {
-        type: SQL.BLOB({ length: 'long' }),
+        type: SQL.TEXT({ length: 'medium' }),
         allowNull: false
     }
 }, {

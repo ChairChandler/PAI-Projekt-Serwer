@@ -109,6 +109,7 @@ function modifyTournament(body, id) {
                 throw new my_error_1.default('unauthorized access to modify protected data');
             }
             const { tournament_name = tournament.tournament_name, description = tournament.description, datetime = tournament.datetime, localization_lat = tournament.localization_lat, localization_lng = tournament.localization_lng, participants_limit = tournament.participants_limit, joining_deadline = tournament.joining_deadline, } = body;
+            // can be done using interleave, however i dont know if sequelize can handle with rollback for many tables
             yield tournament.update({
                 tournament_name,
                 description,
@@ -120,10 +121,15 @@ function modifyTournament(body, id) {
             }, { transaction: t });
             if (body.logos) {
                 for (const l of body.logos) {
-                    if (l.id) {
-                        yield logo_1.default.update({ logo: l.data }, { where: { id: l.id }, transaction: t });
+                    if (l.id) { // UPDATE OR REMOVE
+                        if (l.data) { // UPDATE
+                            yield logo_1.default.update({ logo: l.data }, { where: { id: l.id }, transaction: t });
+                        }
+                        else { // REMOVE
+                            yield logo_1.default.destroy({ where: { id: l.id }, transaction: t });
+                        }
                     }
-                    else {
+                    else { // CREATE
                         yield logo_1.default.create({ tournament_id: body.tournament_id, logo: l.data }, { transaction: t });
                     }
                 }
