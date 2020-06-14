@@ -28,24 +28,25 @@ const jwt = __importStar(require("jsonwebtoken"));
 const crypto_1 = __importDefault(require("crypto"));
 const bcrypt_1 = __importDefault(require("bcrypt"));
 const generate_keys_1 = require("init/generate-keys");
+const logic_error_ts_1 = __importDefault(require("misc/logic-error.ts"));
 function signIn(body) {
     return __awaiter(this, void 0, void 0, function* () {
         try {
             body.password = generate_keys_1.decrypt(body.password);
             if (body.password.length < 8 || body.password.length > 16) {
-                throw new Error('password must be between 8 and 16 characters');
+                throw new logic_error_ts_1.default('password must be between 8 and 16 characters');
             }
             const user = yield user_1.default.findOne({
                 where: { email: body.email }
             });
             if (!user) {
-                throw Error("invalid username or password");
+                throw new logic_error_ts_1.default("invalid username or password");
             }
             else if (!bcrypt_1.default.compareSync(body.password, user.password)) {
-                throw Error("invalid username or password");
+                throw new logic_error_ts_1.default("invalid username or password");
             }
             else if (!user.registered) {
-                throw Error("user hasn't finished registration");
+                throw new logic_error_ts_1.default("user hasn't finished registration");
             }
             const id = crypto_1.default.randomBytes(64).toString('hex');
             const token = jwt.sign({ id: id }, server_json_1.default.token.secret, { expiresIn: server_json_1.default.token.expiresIn }); // 24 hours
@@ -64,7 +65,7 @@ function remindPassword(body) {
         try {
             let user = yield user_1.default.findOne({ where: { email: body.email } });
             if (!user) {
-                throw Error("invalid email");
+                throw new logic_error_ts_1.default("invalid email");
             }
             const token = crypto_1.default.randomBytes(64).toString('hex');
             yield user.update({ forgot_password_token: token }, { transaction: t });
@@ -102,13 +103,13 @@ function changePassword(body) {
         try {
             const user = yield user_1.default.findOne({ where: { email: body.email } });
             if (!user.forgot_password_token) {
-                throw Error("user hasn't requested a password change");
+                throw new logic_error_ts_1.default("user hasn't requested a password change");
             }
             else if (body.password.length < 8 || body.password.length > 16) {
-                throw Error('password must be between 8 and 16 characters');
+                throw new logic_error_ts_1.default('password must be between 8 and 16 characters');
             }
             else if (body.token !== user.forgot_password_token) {
-                throw Error('invalid reset token');
+                throw new logic_error_ts_1.default('invalid reset token');
             }
             const hash = bcrypt_1.default.hashSync(body.password, server_json_1.default.saltRounds);
             yield user.update({ password: hash, forgot_password_token: null }, { transaction: t });

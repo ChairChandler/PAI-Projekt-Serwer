@@ -24,7 +24,7 @@ router.route('/general')
         res.status(http_status_codes_1.default.OK).send(data);
     }
     else {
-        res.status(http_status_codes_1.default.BAD_REQUEST).send(data instanceof Error ? data.message : 'cannot retrieve tournaments list');
+        res.status(http_status_codes_1.default.BAD_REQUEST).send('cannot retrieve tournaments list');
     }
 }));
 exports.default = router;

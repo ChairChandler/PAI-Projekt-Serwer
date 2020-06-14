@@ -19,7 +19,8 @@ const logo_1 = __importDefault(require("models/logo"));
 const database_1 = __importDefault(require("static/database"));
 const node_schedule_1 = __importDefault(require("node-schedule"));
 const ladder_1 = require("services/ladder");
-const jobs_storage_1 = __importDefault(require("misc/jobs-storage"));
+const jobs_storage_1 = __importDefault(require("static/jobs-storage"));
+const logic_error_ts_1 = __importDefault(require("misc/logic-error.ts"));
 function getTournamentList(body) {
     return __awaiter(this, void 0, void 0, function* () {
         try {
@@ -112,13 +113,13 @@ function modifyTournament(body, id) {
         try {
             const tournament = yield tournament_1.default.findOne({ where: { id: body.tournament_id } });
             if (tournament.owner_id != id) {
-                throw Error('unauthorized access to modify protected data');
+                throw new logic_error_ts_1.default('unauthorized access to modify protected data');
             }
             else if (tournament.finished) {
-                throw Error('cannot modify finished tournament');
+                throw new logic_error_ts_1.default('cannot modify finished tournament');
             }
             else if (tournament.datetime.getOnlyDate().getTime() < new Date().getOnlyDate().getTime()) {
-                throw Error('cannot modify when tournament started');
+                throw new logic_error_ts_1.default('cannot modify when tournament started');
             }
             const { tournament_name = tournament.tournament_name, description = tournament.description, datetime = tournament.datetime, localization_lat = tournament.localization_lat, localization_lng = tournament.localization_lng, participants_limit = tournament.participants_limit, joining_deadline = tournament.joining_deadline, } = body;
             // can be done using interleave, however i dont know if sequelize can handle with rollback for many tables

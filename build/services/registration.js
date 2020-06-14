@@ -19,6 +19,7 @@ const server_json_1 = __importDefault(require("config/server.json"));
 const database_1 = __importDefault(require("static/database"));
 const bcrypt_1 = __importDefault(require("bcrypt"));
 const generate_keys_1 = require("init/generate-keys");
+const logic_error_ts_1 = __importDefault(require("misc/logic-error.ts"));
 function signUp(body) {
     return __awaiter(this, void 0, void 0, function* () {
         const t = yield database_1.default.transaction();
@@ -54,10 +55,10 @@ function verify(body) {
                 }
             });
             if (!data) {
-                throw Error("user not found");
+                throw new logic_error_ts_1.default("user not found");
             }
             else if (data.registered) {
-                throw Error("user has been registered before");
+                throw new logic_error_ts_1.default("user has been registered before");
             }
             yield data.update({ registered: true }, { transaction: t });
             t.commit();

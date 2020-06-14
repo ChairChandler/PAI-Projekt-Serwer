@@ -14,10 +14,27 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 Object.defineProperty(exports, "__esModule", { value: true });
 const express_1 = __importDefault(require("express"));
 const token_middleware_1 = require("middlewares/token-middleware");
+const ladder_1 = require("services/ladder");
+const http_status_codes_1 = __importDefault(require("http-status-codes"));
+const logic_error_ts_1 = __importDefault(require("misc/logic-error.ts"));
 const router = express_1.default.Router();
 router.route('/ladder')
     .get(token_middleware_1.TokenMiddleware(), (req, res) => __awaiter(void 0, void 0, void 0, function* () {
+    let data = yield ladder_1.getLadderInfo(req.body);
+    if (!(data instanceof Error)) {
+        res.sendStatus(http_status_codes_1.default.OK);
+    }
+    else {
+        res.status(http_status_codes_1.default.INTERNAL_SERVER_ERROR).send('cannot send ladder');
+    }
 }))
     .put(token_middleware_1.TokenMiddleware(), (req, res) => __awaiter(void 0, void 0, void 0, function* () {
+    let data = yield ladder_1.setScore(req.body);
+    if (!(data instanceof Error)) {
+        res.sendStatus(http_status_codes_1.default.OK);
+    }
+    else {
+        res.status(http_status_codes_1.default.INTERNAL_SERVER_ERROR).send(data instanceof logic_error_ts_1.default ? data.message : 'cannot update score');
+    }
 }));
 exports.default = router;

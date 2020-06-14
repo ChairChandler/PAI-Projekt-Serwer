@@ -16,6 +16,7 @@ const express_1 = __importDefault(require("express"));
 const http_status_codes_1 = __importDefault(require("http-status-codes"));
 const token_middleware_1 = require("middlewares/token-middleware");
 const contestants_1 = require("services/contestants");
+const logic_error_ts_1 = __importDefault(require("misc/logic-error.ts"));
 const router = express_1.default.Router();
 router.route('/contestants')
     .post(token_middleware_1.TokenMiddleware(), (req, res) => __awaiter(void 0, void 0, void 0, function* () {
@@ -24,7 +25,7 @@ router.route('/contestants')
         res.sendStatus(http_status_codes_1.default.NO_CONTENT);
     }
     else {
-        res.status(http_status_codes_1.default.INTERNAL_SERVER_ERROR).send(err instanceof Error ? err.message : 'cannot join to the tournament');
+        res.status(http_status_codes_1.default.INTERNAL_SERVER_ERROR).send(err instanceof logic_error_ts_1.default ? err.message : 'cannot join to the tournament');
     }
 }))
     .get(token_middleware_1.TokenMiddleware(), (req, res) => __awaiter(void 0, void 0, void 0, function* () {
@@ -33,7 +34,7 @@ router.route('/contestants')
         res.status(http_status_codes_1.default.OK).send(data);
     }
     else {
-        res.status(http_status_codes_1.default.UNAUTHORIZED).send(data instanceof Error ? data.message : 'cannot retrieve tournament contestants list');
+        res.status(http_status_codes_1.default.UNAUTHORIZED).send('cannot retrieve tournament contestants list');
     }
 }));
 exports.default = router;
