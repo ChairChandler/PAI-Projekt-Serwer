@@ -54,8 +54,12 @@ export async function getContestants(body: API.TOURNAMENT.CONTESTANTS.GET.INPUT,
                     return { user_id, name, lastname }
                 }))
         } else { // not owner, asking if taking part in tournament
-            const contestant = await Contestants.findOne({ where: { user_id: id, tournament_id: body.tournament_id } })
-            data = { taking_part: contestant ? true : false }
+            if (id) {
+                const contestant = await Contestants.findOne({ where: { user_id: id, tournament_id: body.tournament_id } })
+                data = { taking_part: contestant ? true : false }
+            } else {
+                data = { taking_part: false }
+            }
         }
 
         return data

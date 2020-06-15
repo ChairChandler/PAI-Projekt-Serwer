@@ -21,6 +21,8 @@ export namespace TOURNAMENT.LIST.CONTESTANT.GET {
         joining_deadline: Date
         current_contestants_amount: number
         logos: { id: number, data: string }[]
+        finished: boolean
+        started: boolean
     }[]
 }
 
@@ -43,6 +45,8 @@ export namespace TOURNAMENT.INFO.GET {
         joining_deadline: Date
         current_contestants_amount: number
         logos: { id: number, data: string }[]
+        finished: boolean
+        started: boolean
     }
 }
 
@@ -87,8 +91,8 @@ export namespace TOURNAMENT.LADDER.GET {
     }
 
     export interface OUTPUT {
-        nodes: number
-        contestants: { id: number, name: string, node_id: number }[] //node_id min 0
+        lastNode: number
+        contestants: { id: number, name: string, node_id: number, defeated: boolean | null }[] //node_id min 0
     }
 }
 
@@ -96,7 +100,7 @@ export namespace TOURNAMENT.LADDER.GET {
 export namespace TOURNAMENT.LADDER.PUT {
     export interface INPUT {
         tournament_id: number
-        contestant_id: number
+        user_id: number
         winner: boolean
     }
 }

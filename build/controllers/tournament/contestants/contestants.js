@@ -28,7 +28,7 @@ router.route('/contestants')
         res.status(http_status_codes_1.default.INTERNAL_SERVER_ERROR).send(err instanceof logic_error_1.default ? err.message : 'cannot join to the tournament');
     }
 }))
-    .get(token_middleware_1.TokenMiddleware(), (req, res) => __awaiter(void 0, void 0, void 0, function* () {
+    .get((req, res) => __awaiter(void 0, void 0, void 0, function* () {
     let data = yield contestants_1.getContestants(req.body, Number.parseInt(req.cookies["secure-id"]));
     if (!(data instanceof Error)) {
         res.status(http_status_codes_1.default.OK).send(data);

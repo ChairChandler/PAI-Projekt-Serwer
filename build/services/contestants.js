@@ -66,8 +66,13 @@ function getContestants(body, id) {
                 })));
             }
             else { // not owner, asking if taking part in tournament
-                const contestant = yield contestants_1.default.findOne({ where: { user_id: id, tournament_id: body.tournament_id } });
-                data = { taking_part: contestant ? true : false };
+                if (id) {
+                    const contestant = yield contestants_1.default.findOne({ where: { user_id: id, tournament_id: body.tournament_id } });
+                    data = { taking_part: contestant ? true : false };
+                }
+                else {
+                    data = { taking_part: false };
+                }
             }
             return data;
         }

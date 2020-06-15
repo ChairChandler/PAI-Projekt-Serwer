@@ -13,6 +13,7 @@ class Tournament extends SQL.Model {
     public participants_limit: number | null
     public joining_deadline: Date
     public current_contestants_amount: number
+    public started: boolean
     public finished: boolean
 
     public readonly createdAt: Date
@@ -88,6 +89,10 @@ Tournament.init({
         type: SQL.INTEGER.UNSIGNED,
         allowNull: false,
         defaultValue: 0
+    },
+    started: {
+        type: SQL.BOOLEAN,
+        defaultValue: false
     },
     finished: {
         type: SQL.BOOLEAN,

@@ -66,7 +66,9 @@ function getTournamentInfo(body) {
                 participants_limit: info.participants_limit,
                 joining_deadline: info.joining_deadline,
                 current_contestants_amount: info.current_contestants_amount,
-                logos: imgData
+                logos: imgData,
+                finished: info.finished,
+                started: info.started
             };
         }
         catch (err) {
@@ -91,7 +93,6 @@ function createTournament(body, id) {
                 participants_limit: body.participants_limit,
                 joining_deadline: body.joining_deadline
             }, { transaction: t });
-            console.log(1);
             for (const logo of body.logos) {
                 yield logo_1.default.create({ tournament_id: tournament.id, logo: logo.data }, { transaction: t });
             }
@@ -119,7 +120,7 @@ function modifyTournament(body, id) {
             else if (tournament.finished) {
                 throw new logic_error_1.default('cannot modify finished tournament');
             }
-            else if (tournament.datetime.getOnlyDate().getTime() < new Date().getOnlyDate().getTime()) {
+            else if (tournament.started || tournament.datetime.getOnlyDate().getTime() < new Date().getOnlyDate().getTime()) {
                 throw new logic_error_1.default('cannot modify when tournament started');
             }
             const { tournament_name = tournament.tournament_name, description = tournament.description, datetime = tournament.datetime, localization_lat = tournament.localization_lat, localization_lng = tournament.localization_lng, participants_limit = tournament.participants_limit, joining_deadline = tournament.joining_deadline, } = body;
@@ -188,7 +189,9 @@ function getTournamentsInfoForContestant(id) {
                     participants_limit: info.participants_limit,
                     joining_deadline: info.joining_deadline,
                     current_contestants_amount: info.current_contestants_amount,
-                    logos: imgData
+                    logos: imgData,
+                    finished: info.finished,
+                    started: info.started
                 });
             }
             return response_data;

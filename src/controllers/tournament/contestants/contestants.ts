@@ -15,7 +15,7 @@ router.route('/contestants')
         res.status(HttpCode.INTERNAL_SERVER_ERROR).send(err instanceof LogicError ? err.message : 'cannot join to the tournament')
     }
 })
-.get(TokenMiddleware(), async (req: Request, res: Response) => { // get tournament contestants list
+.get(async (req: Request, res: Response) => { // get tournament contestants list
     let data = await getContestants(req.body, Number.parseInt(req.cookies["secure-id"]))
     if(!(data instanceof Error)) {
         res.status(HttpCode.OK).send(data)

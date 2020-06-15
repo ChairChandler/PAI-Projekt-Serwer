@@ -83,6 +83,10 @@ Tournament.init({
         allowNull: false,
         defaultValue: 0
     },
+    started: {
+        type: SQL.BOOLEAN,
+        defaultValue: false
+    },
     finished: {
         type: SQL.BOOLEAN,
         defaultValue: false

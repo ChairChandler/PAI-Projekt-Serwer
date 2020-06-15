@@ -54,7 +54,9 @@ export async function getTournamentInfo(body: API.TOURNAMENT.INFO.GET.INPUT):
             participants_limit: info.participants_limit,
             joining_deadline: info.joining_deadline,
             current_contestants_amount: info.current_contestants_amount,
-            logos: imgData
+            logos: imgData,
+            finished: info.finished,
+            started: info.started
         }
     } catch (err) {
         console.error(err)
@@ -76,7 +78,7 @@ export async function createTournament(body: API.TOURNAMENT.INFO.POST.INPUT, id:
             participants_limit: body.participants_limit,
             joining_deadline: body.joining_deadline
         }, { transaction: t })
-        console.log(1)
+
         for (const logo of body.logos) {
             await Logo.create({ tournament_id: tournament.id, logo: logo.data }, { transaction: t })
         }
@@ -101,7 +103,7 @@ export async function modifyTournament(body: API.TOURNAMENT.INFO.PUT.INPUT, id: 
             throw new LogicError('unauthorized access to modify protected data')
         } else if(tournament.finished) {
             throw new LogicError('cannot modify finished tournament')
-        } else if(tournament.datetime.getOnlyDate().getTime() < new Date().getOnlyDate().getTime()) {
+        } else if(tournament.started || tournament.datetime.getOnlyDate().getTime() < new Date().getOnlyDate().getTime()) {
             throw new LogicError('cannot modify when tournament started')
         }
 
@@ -182,7 +184,9 @@ export async function getTournamentsInfoForContestant(id: number):
                 participants_limit: info.participants_limit,
                 joining_deadline: info.joining_deadline,
                 current_contestants_amount: info.current_contestants_amount,
-                logos: imgData
+                logos: imgData,
+                finished: info.finished,
+                started: info.started
             })
         }
 

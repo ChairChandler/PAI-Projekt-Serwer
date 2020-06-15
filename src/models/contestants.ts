@@ -53,7 +53,7 @@ Contestant.init({
     },
     defeated: {
         type: SQL.BOOLEAN,
-        defaultValue: false
+        defaultValue: null
     }
 },  {
     sequelize: db,
