@@ -28,7 +28,7 @@ const db_config = __importStar(require("config/database.json"));
 function init() {
     return __awaiter(this, void 0, void 0, function* () {
         try {
-            const conf = { force: db_config.force_init }; // delete table during init server?
+            const conf = { force: db_config.force_init }; // if force init is set then delete all tables
             if (db_config.force_init) {
                 yield database_1.default.query('SET FOREIGN_KEY_CHECKS = 0');
             }

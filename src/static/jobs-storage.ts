@@ -1,7 +1,7 @@
 import Schedule from 'node-schedule'
 
 class JobsStorage {
-    private jobs: Schedule.Job[]
+    private jobs: Schedule.Job[] = []
 
     setJob(tournament_id: number, job: Schedule.Job) {
         this.jobs[tournament_id] = job

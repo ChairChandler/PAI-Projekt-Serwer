@@ -76,13 +76,12 @@ export async function createTournament(body: API.TOURNAMENT.INFO.POST.INPUT, id:
             participants_limit: body.participants_limit,
             joining_deadline: body.joining_deadline
         }, { transaction: t })
-
+        console.log(1)
         for (const logo of body.logos) {
             await Logo.create({ tournament_id: tournament.id, logo: logo.data }, { transaction: t })
         }
-
+        
         job = Schedule.scheduleJob(body.datetime, () => shuffleTournament(tournament.id))
-
         JobStorage.setJob(tournament.id, job)
 
         await t.commit()

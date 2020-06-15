@@ -7,10 +7,10 @@ import LogicError from 'misc/logic-error'
 const router = express.Router()
 
 router.route('/ladder')
-    .get(TokenMiddleware(), async (req: Request, res: Response) => { // get tournament ladder
+    .get(async (req: Request, res: Response) => { // get tournament ladder
         let data = await getLadderInfo(req.body)
         if (!(data instanceof Error)) {
-            res.sendStatus(HttpCode.OK)
+            res.status(HttpCode.OK).send(data)
         } else {
             res.status(HttpCode.INTERNAL_SERVER_ERROR).send('cannot send ladder')
         }

@@ -91,6 +91,7 @@ function createTournament(body, id) {
                 participants_limit: body.participants_limit,
                 joining_deadline: body.joining_deadline
             }, { transaction: t });
+            console.log(1);
             for (const logo of body.logos) {
                 yield logo_1.default.create({ tournament_id: tournament.id, logo: logo.data }, { transaction: t });
             }
